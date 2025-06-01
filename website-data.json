@@ -1,0 +1,282 @@
+{
+  "logo": null,
+  "personal": {
+    "name": "Your Name",
+    "title": "Student | Dreamer | Future Leader",
+    "about": "Hello! I'm a passionate student currently pursuing my education and exploring various interests. I believe in continuous learning, building meaningful relationships, and making a positive impact in my community.",
+    "age": "[Your Age]",
+    "location": "[Your City, Country]",
+    "interests": "Reading, Technology, Sports",
+    "languages": "English, [Other Languages]",
+    "email": "your.email@example.com",
+    "phone": "+1 (555) 123-4567",
+    "social": "@yourusername",
+    "profileImage": null
+  },
+  "education": {
+    "gs": {
+      "title": "Grade School",
+      "school": "Elementary School Name",
+      "years": "2010-2016",
+      "description": "Foundation years where I developed basic academic skills and discovered my love for learning.",
+      "subjects": [
+        "Mathematics",
+        "Science",
+        "English",
+        "[Other subjects]"
+      ],
+      "activities": [
+        "Student Council",
+        "Academic Clubs",
+        "Sports Teams",
+        "[Other activities]"
+      ]
+    },
+    "hs": {
+      "title": "High School",
+      "school": "High School Name",
+      "years": "2016-2020",
+      "description": "Formative years that shaped my academic interests and helped me develop leadership skills.",
+      "subjects": [
+        "Mathematics",
+        "Science",
+        "English",
+        "[Other subjects]"
+      ],
+      "activities": [
+        "Student Council",
+        "Academic Clubs",
+        "Sports Teams",
+        "[Other activities]"
+      ]
+    },
+    "shs": {
+      "title": "Senior High School",
+      "school": "Senior High School Name",
+      "years": "2020-2022",
+      "description": "Specialized education that prepared me for college and helped me choose my career path.",
+      "subjects": [
+        "Mathematics",
+        "Science",
+        "English",
+        "[Other subjects]"
+      ],
+      "activities": [
+        "Student Council",
+        "Academic Clubs",
+        "Sports Teams",
+        "[Other activities]"
+      ]
+    },
+    "college": {
+      "title": "College",
+      "school": "University Name",
+      "years": "2022-Present",
+      "description": "Current academic journey where I'm pursuing my degree and developing professional skills.",
+      "subjects": [
+        "Mathematics",
+        "Science",
+        "English",
+        "[Other subjects]"
+      ],
+      "activities": [
+        "Student Council",
+        "Academic Clubs",
+        "Sports Teams",
+        "[Other activities]"
+      ]
+    }
+  },
+  "family": {
+    "father": {
+      "title": "My Father",
+      "list": [
+        {
+          "name": "Father's Name",
+          "description": "My father is my role model and biggest supporter. He has always encouraged me to pursue my dreams.",
+          "image": null
+        }
+      ]
+    },
+    "mother": {
+      "title": "My Mother",
+      "list": [
+        {
+          "name": "Mother's Name",
+          "description": "My mother is the heart of our family. Her love and care have shaped who I am today.",
+          "image": null
+        }
+      ]
+    },
+    "siblings": {
+      "title": "My Siblings",
+      "list": [
+        {
+          "name": "Brother/Sister Name",
+          "description": "My sibling is my best friend and partner in all adventures.",
+          "image": null
+        },
+        {
+          "name": "Another Sibling",
+          "description": "Another amazing sibling who brings joy to our family.",
+          "image": null
+        }
+      ]
+    },
+    "grandparents": {
+      "title": "My Grand Parents",
+      "list": [
+        {
+          "name": "Grandparents' Names",
+          "description": "My grandparents are the wisdom keepers of our family, sharing stories and life lessons.",
+          "image": null
+        }
+      ]
+    }
+  },
+  "collections": [
+    {
+      "name": "Books",
+      "icon": "📚",
+      "description": "Collection of favorite novels, academic books, and inspiring biographies."
+    },
+    {
+      "name": "Music",
+      "icon": "🎵",
+      "description": "Vinyl records, CDs, and digital playlists spanning various genres."
+    },
+    {
+      "name": "Sports",
+      "icon": "⚽",
+      "description": "Memorabilia from favorite teams and sports equipment collection."
+    }
+  ],
+  "friends": {
+    "school": {
+      "title": "School Mates",
+      "description": "Friends who share the academic journey with me.",
+      "list": [
+        {
+          "name": "Friend 1",
+          "image": null
+        },
+        {
+          "name": "Friend 2",
+          "image": null
+        },
+        {
+          "name": "Friend 3",
+          "image": null
+        }
+      ]
+    },
+    "church": {
+      "title": "Church Mates",
+      "description": "Friends from my faith community who support my spiritual growth.",
+      "list": [
+        {
+          "name": "Friend 1",
+          "image": null
+        },
+        {
+          "name": "Friend 2",
+          "image": null
+        },
+        {
+          "name": "Friend 3",
+          "image": null
+        }
+      ]
+    },
+    "org": {
+      "title": "Organization Friends",
+      "description": "Friends from various clubs and organizations I'm part of.",
+      "list": [
+        {
+          "name": "Friend 1",
+          "image": null
+        },
+        {
+          "name": "Friend 2",
+          "image": null
+        },
+        {
+          "name": "Friend 3",
+          "image": null
+        }
+      ]
+    }
+  },
+  "achievements": [
+    {
+      "title": "Academic Excellence Award",
+      "year": "2023",
+      "description": "Recognized for outstanding academic performance"
+    },
+    {
+      "title": "Leadership Award",
+      "year": "2023",
+      "description": "For demonstrating exceptional leadership skills"
+    },
+    {
+      "title": "Community Service Recognition",
+      "year": "2022",
+      "description": "For volunteer work in the local community"
+    },
+    {
+      "title": "Sports Achievement",
+      "year": "2022",
+      "description": "Achievement in school sports competition"
+    }
+  ],
+  "gallery": [
+    {
+      "title": "Family Vacation",
+      "description": "Summer trip with family",
+      "image": null
+    },
+    {
+      "title": "Graduation Day",
+      "description": "Celebrating academic milestone",
+      "image": null
+    },
+    {
+      "title": "School Event",
+      "description": "Participating in school activities",
+      "image": null
+    }
+  ],
+  "advocacy": {
+    "title": "Climate Change Awareness",
+    "issue": "Climate change is one of the most pressing challenges of our time, affecting ecosystems, weather patterns, and human lives globally.",
+    "causes": [
+      "Greenhouse gas emissions from fossil fuels",
+      "Deforestation and land use changes",
+      "Industrial processes and agriculture",
+      "Transportation and energy consumption"
+    ],
+    "effects": [
+      "Rising global temperatures",
+      "Extreme weather events",
+      "Sea level rise",
+      "Impact on biodiversity"
+    ],
+    "solutions": [
+      "Education and awareness campaigns",
+      "Sustainable lifestyle choices",
+      "Support for renewable energy",
+      "Community action and advocacy"
+    ],
+    "myActions": "I'm committed to raising awareness about climate change through social media campaigns, participating in local environmental initiatives, and promoting sustainable practices in my school and community."
+  },
+  "multimedia": {
+    "audio": {
+      "title": "Sample Audio Description",
+      "file": null
+    },
+    "video": {
+      "title": "Sample Video Description",
+      "file": null
+    }
+  }
+}
