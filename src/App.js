@@ -512,13 +512,10 @@ const PersonalWebsite = () => {
     }
   };
 
-  // Handle responsive design
+  // Handle responsive design - Define breakpoints
   const isMobile = windowWidth <= 768;
-  
-  if (isMobile) {
-    styles.nav.display = 'none';
-    styles.mobileMenuButton.display = 'block';
-  }
+  const isTablet = windowWidth > 768 && windowWidth <= 1024;
+  const isSmallMobile = windowWidth <= 480;
 
   const handleLogout = () => {
     setIsAdmin(false);
@@ -829,7 +826,8 @@ const PersonalWebsite = () => {
     });
   };
 
-  const styles = {
+  // Responsive styles that adapt to screen size
+  const getResponsiveStyles = () => ({
     container: {
       minHeight: '100vh',
       backgroundColor: '#fefcff',
@@ -855,35 +853,38 @@ const PersonalWebsite = () => {
       pointerEvents: 'none'
     },
     headerContent: {
-      maxWidth: '1400px',
+      maxWidth: isMobile ? '100%' : '1400px',
       margin: '0 auto',
-      padding: '20px 24px',
+      padding: isMobile ? '12px 16px' : '20px 24px',
       position: 'relative',
       zIndex: 2
     },
     headerTop: {
       display: 'flex',
       justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '20px'
+      alignItems: isMobile ? 'flex-start' : 'center',
+      marginBottom: isMobile ? '12px' : '20px',
+      flexDirection: isMobile ? 'column' : 'row',
+      gap: isMobile ? '12px' : '0'
     },
     logoSection: {
       display: 'flex',
       alignItems: 'center',
-      gap: '16px'
+      gap: isMobile ? '12px' : '16px',
+      width: isMobile ? '100%' : 'auto'
     },
     logo: {
-      width: '48px',
-      height: '48px',
-      borderRadius: '12px',
+      width: isMobile ? '36px' : '48px',
+      height: isMobile ? '36px' : '48px',
+      borderRadius: isMobile ? '8px' : '12px',
       objectFit: 'cover',
       border: '2px solid rgba(255, 255, 255, 0.3)',
       boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
     },
     logoPlaceholder: {
-      width: '48px',
-      height: '48px',
-      borderRadius: '12px',
+      width: isMobile ? '36px' : '48px',
+      height: isMobile ? '36px' : '48px',
+      borderRadius: isMobile ? '8px' : '12px',
       background: 'rgba(255, 255, 255, 0.2)',
       display: 'flex',
       alignItems: 'center',
@@ -897,32 +898,35 @@ const PersonalWebsite = () => {
       borderColor: 'rgba(255, 255, 255, 0.6)'
     },
     title: {
-      fontSize: '28px',
+      fontSize: isMobile ? '18px' : isTablet ? '24px' : '28px',
       fontWeight: '700',
       margin: 0,
       background: 'linear-gradient(45deg, #ffffff 0%, #f8fafc 100%)',
       backgroundClip: 'text',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
-      textShadow: '0 2px 10px rgba(0,0,0,0.1)'
+      textShadow: '0 2px 10px rgba(0,0,0,0.1)',
+      flex: 1
     },
     adminControls: {
       display: 'flex',
       alignItems: 'center',
-      gap: '12px',
-      flexWrap: 'wrap'
+      gap: isMobile ? '6px' : '12px',
+      flexWrap: 'wrap',
+      width: isMobile ? '100%' : 'auto',
+      justifyContent: isMobile ? 'flex-start' : 'flex-end'
     },
     button: {
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
-      padding: '10px 18px',
+      gap: isMobile ? '4px' : '8px',
+      padding: isMobile ? '8px 12px' : '10px 18px',
       backgroundColor: 'rgba(255, 255, 255, 0.15)',
       color: 'white',
       border: 'none',
-      borderRadius: '12px',
+      borderRadius: isMobile ? '8px' : '12px',
       cursor: 'pointer',
-      fontSize: '14px',
+      fontSize: isMobile ? '12px' : '14px',
       fontWeight: '500',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       backdropFilter: 'blur(10px)',
@@ -942,27 +946,28 @@ const PersonalWebsite = () => {
       boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
     },
     buttonSmall: {
-      padding: '6px 12px',
-      fontSize: '12px',
+      padding: isMobile ? '4px 8px' : '6px 12px',
+      fontSize: isMobile ? '10px' : '12px',
       borderRadius: '8px'
     },
     nav: {
-      display: 'flex',
+      display: isMobile ? 'none' : 'flex',
       flexWrap: 'wrap',
-      gap: '8px'
-    },
-    navMobile: {
-      display: 'none'
+      gap: isTablet ? '6px' : '8px'
     },
     mobileMenuButton: {
-      display: 'none',
-      padding: '8px',
+      display: isMobile ? 'flex' : 'none',
+      alignItems: 'center',
+      gap: '8px',
+      padding: '10px 16px',
       backgroundColor: 'rgba(255, 255, 255, 0.2)',
       color: 'white',
       border: 'none',
       borderRadius: '8px',
       cursor: 'pointer',
-      fontSize: '16px'
+      fontSize: '16px',
+      width: '100%',
+      justifyContent: 'center'
     },
     mobileMenuOpen: {
       display: 'block',
@@ -975,7 +980,8 @@ const PersonalWebsite = () => {
       overflow: 'hidden'
     },
     mobileMenuItem: {
-      display: 'block',
+      display: 'flex',
+      alignItems: 'center',
       width: '100%',
       padding: '16px 20px',
       backgroundColor: 'transparent',
@@ -1000,14 +1006,14 @@ const PersonalWebsite = () => {
     navButton: {
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
-      padding: '12px 20px',
+      gap: isTablet ? '6px' : '8px',
+      padding: isTablet ? '10px 16px' : '12px 20px',
       backgroundColor: 'transparent',
       color: 'white',
       border: 'none',
       borderRadius: '12px',
       cursor: 'pointer',
-      fontSize: '14px',
+      fontSize: isTablet ? '13px' : '14px',
       fontWeight: '500',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       backdropFilter: 'blur(10px)'
@@ -1064,19 +1070,19 @@ const PersonalWebsite = () => {
       color: '#667eea'
     },
     main: {
-      maxWidth: '1400px',
+      maxWidth: isMobile ? '100%' : '1400px',
       margin: '0 auto',
-      padding: '40px 24px',
+      padding: isMobile ? '20px 16px' : isTablet ? '30px 20px' : '40px 24px',
       flex: 1,
       position: 'relative',
       zIndex: 1
     },
     card: {
       backgroundColor: 'white',
-      borderRadius: '20px',
-      padding: '32px',
+      borderRadius: isMobile ? '16px' : '20px',
+      padding: isMobile ? '20px' : isTablet ? '24px' : '32px',
       boxShadow: '0 8px 30px rgba(0, 0, 0, 0.06)',
-      marginBottom: '24px',
+      marginBottom: isMobile ? '16px' : '24px',
       border: '1px solid rgba(255, 255, 255, 0.8)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       position: 'relative',
@@ -1099,90 +1105,93 @@ const PersonalWebsite = () => {
     },
     grid: {
       display: 'grid',
-      gap: '24px'
+      gap: isMobile ? '16px' : '24px'
     },
     gridMd2: {
-      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
+      gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(auto-fit, minmax(280px, 1fr))' : 'repeat(auto-fit, minmax(320px, 1fr))'
     },
     gridLg3: {
-      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))'
+      gridTemplateColumns: isMobile ? '1fr' : isSmallMobile ? '1fr' : isTablet ? 'repeat(auto-fit, minmax(240px, 1fr))' : 'repeat(auto-fit, minmax(280px, 1fr))'
     },
     textCenter: {
       textAlign: 'center'
     },
     profileImage: {
-      width: '140px',
-      height: '140px',
+      width: isMobile ? '100px' : isTablet ? '120px' : '140px',
+      height: isMobile ? '100px' : isTablet ? '120px' : '140px',
       borderRadius: '50%',
-      margin: '0 auto 32px',
+      margin: isMobile ? '0 auto 20px' : '0 auto 32px',
       objectFit: 'cover',
       border: '4px solid rgba(102, 126, 234, 0.1)',
       boxShadow: '0 8px 30px rgba(102, 126, 234, 0.2)'
     },
     profilePlaceholder: {
-      width: '140px',
-      height: '140px',
+      width: isMobile ? '100px' : isTablet ? '120px' : '140px',
+      height: isMobile ? '100px' : isTablet ? '120px' : '140px',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
       borderRadius: '50%',
-      margin: '0 auto 32px',
+      margin: isMobile ? '0 auto 20px' : '0 auto 32px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       color: 'white',
-      fontSize: '56px',
+      fontSize: isMobile ? '40px' : isTablet ? '48px' : '56px',
       fontWeight: '700',
       boxShadow: '0 8px 30px rgba(102, 126, 234, 0.3)',
       border: '4px solid rgba(255, 255, 255, 0.2)'
     },
     avatarSmall: {
-      width: '72px',
-      height: '72px',
+      width: isMobile ? '60px' : '72px',
+      height: isMobile ? '60px' : '72px',
       borderRadius: '50%',
       objectFit: 'cover',
       border: '3px solid rgba(102, 126, 234, 0.1)',
       boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
     },
     avatarPlaceholder: {
-      width: '72px',
-      height: '72px',
+      width: isMobile ? '60px' : '72px',
+      height: isMobile ? '60px' : '72px',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       color: 'white',
-      fontSize: '28px',
+      fontSize: isMobile ? '20px' : '28px',
       fontWeight: '600',
       boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
       border: '3px solid rgba(255, 255, 255, 0.2)'
     },
     achievementItem: {
       display: 'flex',
-      alignItems: 'center',
-      gap: '20px',
+      alignItems: isMobile ? 'flex-start' : 'center',
+      gap: isMobile ? '12px' : '20px',
       backgroundColor: 'white',
-      borderRadius: '20px',
-      padding: '28px',
+      borderRadius: isMobile ? '16px' : '20px',
+      padding: isMobile ? '20px' : '28px',
       boxShadow: '0 8px 30px rgba(0, 0, 0, 0.06)',
       marginBottom: '16px',
       border: '1px solid rgba(255, 255, 255, 0.8)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      flexDirection: isMobile ? 'column' : 'row',
+      textAlign: isMobile ? 'center' : 'left'
     },
     achievementIcon: {
-      width: '56px',
-      height: '56px',
+      width: isMobile ? '48px' : '56px',
+      height: isMobile ? '48px' : '56px',
       background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-      borderRadius: '16px',
+      borderRadius: isMobile ? '12px' : '16px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      boxShadow: '0 4px 15px rgba(251, 191, 36, 0.3)'
+      boxShadow: '0 4px 15px rgba(251, 191, 36, 0.3)',
+      margin: isMobile ? '0 auto' : '0'
     },
     galleryItem: {
       backgroundColor: 'white',
-      borderRadius: '20px',
+      borderRadius: isMobile ? '16px' : '20px',
       overflow: 'hidden',
       boxShadow: '0 8px 30px rgba(0, 0, 0, 0.06)',
       border: '1px solid rgba(255, 255, 255, 0.8)',
@@ -1191,12 +1200,12 @@ const PersonalWebsite = () => {
     },
     galleryImage: {
       width: '100%',
-      height: '220px',
+      height: isMobile ? '180px' : isTablet ? '200px' : '220px',
       objectFit: 'cover'
     },
     galleryPlaceholder: {
       width: '100%',
-      height: '220px',
+      height: isMobile ? '180px' : isTablet ? '200px' : '220px',
       background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #ddd6fe 100%)',
       display: 'flex',
       alignItems: 'center',
@@ -1204,38 +1213,38 @@ const PersonalWebsite = () => {
     },
     multimedia: {
       backgroundColor: 'white',
-      padding: '48px 0',
+      padding: isMobile ? '32px 0' : '48px 0',
       borderTop: '1px solid rgba(102, 126, 234, 0.1)',
       position: 'relative'
     },
     multimediaContent: {
-      maxWidth: '1400px',
+      maxWidth: isMobile ? '100%' : '1400px',
       margin: '0 auto',
-      padding: '0 24px'
+      padding: isMobile ? '0 16px' : '0 24px'
     },
     multimediaGrid: {
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
-      gap: '32px'
+      gridTemplateColumns: isMobile ? '1fr' : isTablet ? '1fr' : 'repeat(auto-fit, minmax(420px, 1fr))',
+      gap: isMobile ? '24px' : '32px'
     },
     multimediaCard: {
       background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-      borderRadius: '24px',
-      padding: '32px',
+      borderRadius: isMobile ? '20px' : '24px',
+      padding: isMobile ? '24px' : '32px',
       border: '1px solid rgba(102, 126, 234, 0.1)',
       boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)'
     },
     multimediaInner: {
       backgroundColor: 'white',
       borderRadius: '16px',
-      padding: '24px',
+      padding: isMobile ? '20px' : '24px',
       textAlign: 'center',
       boxShadow: '0 4px 15px rgba(0, 0, 0, 0.04)',
       border: '1px solid rgba(255, 255, 255, 0.8)'
     },
     mediaPlaceholder: {
       width: '100%',
-      height: '160px',
+      height: isMobile ? '120px' : '160px',
       background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
       borderRadius: '12px',
       display: 'flex',
@@ -1247,16 +1256,16 @@ const PersonalWebsite = () => {
     footer: {
       background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
       color: 'white',
-      padding: '32px 0',
+      padding: isMobile ? '24px 0' : '32px 0',
       textAlign: 'center',
       marginTop: 'auto',
       position: 'relative',
       overflow: 'hidden'
     },
     footerContent: {
-      maxWidth: '1400px',
+      maxWidth: isMobile ? '100%' : '1400px',
       margin: '0 auto',
-      padding: '0 24px',
+      padding: isMobile ? '0 16px' : '0 24px',
       position: 'relative',
       zIndex: 2
     },
@@ -1279,10 +1288,10 @@ const PersonalWebsite = () => {
     },
     loginCard: {
       backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      padding: '40px',
+      padding: isMobile ? '30px 20px' : '40px',
       borderRadius: '24px',
       boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2)',
-      width: '420px',
+      width: isMobile ? '100%' : '420px',
       maxWidth: '90vw',
       backdropFilter: 'blur(20px)',
       border: '1px solid rgba(255, 255, 255, 0.3)'
@@ -1344,7 +1353,8 @@ const PersonalWebsite = () => {
     },
     flexRow: {
       display: 'flex',
-      gap: '16px'
+      gap: '16px',
+      flexDirection: isMobile ? 'column' : 'row'
     },
     uploadButton: {
       position: 'absolute',
@@ -1352,7 +1362,7 @@ const PersonalWebsite = () => {
       right: '8px',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       color: 'white',
-      padding: '10px',
+      padding: isMobile ? '8px' : '10px',
       borderRadius: '50%',
       border: 'none',
       cursor: 'pointer',
@@ -1369,7 +1379,7 @@ const PersonalWebsite = () => {
       right: '12px',
       background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
       color: 'white',
-      padding: '8px',
+      padding: isMobile ? '6px' : '8px',
       borderRadius: '50%',
       border: 'none',
       cursor: 'pointer',
@@ -1391,20 +1401,22 @@ const PersonalWebsite = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: '32px'
+      marginBottom: isMobile ? '20px' : '32px',
+      flexDirection: isMobile ? 'column' : 'row',
+      gap: isMobile ? '12px' : '0'
     },
     addButton: {
       background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
       color: 'white',
       border: 'none',
       borderRadius: '12px',
-      padding: '12px 20px',
+      padding: isMobile ? '10px 16px' : '12px 20px',
       cursor: 'pointer',
-      fontSize: '14px',
+      fontSize: isMobile ? '12px' : '14px',
       fontWeight: '500',
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
+      gap: isMobile ? '6px' : '8px',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
     },
@@ -1413,17 +1425,18 @@ const PersonalWebsite = () => {
       boxShadow: '0 8px 25px rgba(16, 185, 129, 0.4)'
     },
     sectionTitle: {
-      fontSize: '32px',
+      fontSize: isMobile ? '24px' : isTablet ? '28px' : '32px',
       fontWeight: '700',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       backgroundClip: 'text',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       margin: 0,
-      lineHeight: 1.2
+      lineHeight: 1.2,
+      textAlign: isMobile ? 'center' : 'left'
     },
     subtitle: {
-      fontSize: '18px',
+      fontSize: isMobile ? '16px' : '18px',
       color: '#6b7280',
       fontWeight: '400',
       lineHeight: 1.5
@@ -1445,7 +1458,10 @@ const PersonalWebsite = () => {
       WebkitTextFillColor: 'transparent',
       fontWeight: '600'
     }
-  };
+  });
+
+  // Get responsive styles
+  const styles = getResponsiveStyles();
 
   const renderContent = () => {
     // Check if activeSection is a family member
@@ -1453,10 +1469,10 @@ const PersonalWebsite = () => {
       const familyGroup = content.family[activeSection];
       
       return (
-        <div style={{ ...styles.grid, gap: '24px' }}>
+        <div style={{ ...styles.grid, gap: isMobile ? '16px' : '24px' }}>
           <div style={styles.sectionHeader}>
-            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', margin: 0 }}>{familyGroup.title}</h2>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', color: '#1f2937', margin: 0, textAlign: isMobile ? 'center' : 'left' }}>{familyGroup.title}</h2>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-end' }}>
               {editMode && (
                 <>
                   <button 
@@ -1494,12 +1510,12 @@ const PersonalWebsite = () => {
                   </button>
                 )}
                 
-                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                <div style={{ textAlign: 'center', marginBottom: isMobile ? '16px' : '20px' }}>
                   <div style={styles.relative}>
                     {person.image ? (
-                      <img src={person.image} alt={person.name} style={{ ...styles.avatarSmall, width: '96px', height: '96px', margin: '0 auto' }} />
+                      <img src={person.image} alt={person.name} style={{ ...styles.avatarSmall, width: isMobile ? '80px' : '96px', height: isMobile ? '80px' : '96px', margin: '0 auto' }} />
                     ) : (
-                      <div style={{ ...styles.avatarPlaceholder, width: '96px', height: '96px', fontSize: '32px', margin: '0 auto' }}>
+                      <div style={{ ...styles.avatarPlaceholder, width: isMobile ? '80px' : '96px', height: isMobile ? '80px' : '96px', fontSize: isMobile ? '28px' : '32px', margin: '0 auto' }}>
                         {person.name.charAt(0)}
                       </div>
                     )}
@@ -1517,7 +1533,7 @@ const PersonalWebsite = () => {
                 </div>
                 
                 <div style={{ textAlign: 'center' }}>
-                  <h3 style={{ fontSize: '20px', color: '#667eea', marginBottom: '12px', fontWeight: '600' }}>
+                  <h3 style={{ fontSize: isMobile ? '18px' : '20px', color: '#667eea', marginBottom: '12px', fontWeight: '600' }}>
                     {renderEditableInput(person.name, (value) => {
                       const newContent = { ...content };
                       newContent.family[activeSection].list[index].name = value;
@@ -1543,9 +1559,9 @@ const PersonalWebsite = () => {
     if (content.education && content.education[activeSection]) {
       const edu = content.education[activeSection];
       return (
-        <div style={{ ...styles.grid, gap: '24px' }}>
+        <div style={{ ...styles.grid, gap: isMobile ? '16px' : '24px' }}>
           <div style={styles.sectionHeader}>
-            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', margin: 0 }}>Education Level</h2>
+            <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', color: '#1f2937', margin: 0, textAlign: isMobile ? 'center' : 'left' }}>Education Level</h2>
             {editMode && (
               <button
                 onClick={() => removeEducationLevel(activeSection)}
@@ -1558,10 +1574,10 @@ const PersonalWebsite = () => {
           </div>
           
           <div style={styles.card}>
-            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1f2937', marginBottom: '16px' }}>
+            <h3 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: 'bold', color: '#1f2937', marginBottom: '16px' }}>
               {renderEditableInput(edu.title, (value) => updateContent('education', `${activeSection}.title`, value))}
             </h3>
-            <h4 style={{ fontSize: '18px', color: '#3b82f6', marginBottom: '8px' }}>
+            <h4 style={{ fontSize: isMobile ? '16px' : '18px', color: '#3b82f6', marginBottom: '8px' }}>
               {renderEditableInput(edu.school, (value) => updateContent('education', `${activeSection}.school`, value))}
             </h4>
             <p style={{ color: '#6b7280', marginBottom: '16px' }}>
@@ -1575,7 +1591,7 @@ const PersonalWebsite = () => {
           <div style={{ ...styles.grid, ...styles.gridMd2 }}>
             <div style={styles.card}>
               <div style={styles.sectionHeader}>
-                <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', margin: 0 }}>Subjects/Courses</h3>
+                <h3 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '600', color: '#1f2937', margin: 0 }}>Subjects/Courses</h3>
                 {editMode && (
                   <button
                     onClick={() => {
@@ -1622,7 +1638,7 @@ const PersonalWebsite = () => {
 
             <div style={styles.card}>
               <div style={styles.sectionHeader}>
-                <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', margin: 0 }}>Activities</h3>
+                <h3 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '600', color: '#1f2937', margin: 0 }}>Activities</h3>
                 {editMode && (
                   <button
                     onClick={() => {
@@ -1675,12 +1691,12 @@ const PersonalWebsite = () => {
     if (content.friends && content.friends[activeSection]) {
       const friendGroup = content.friends[activeSection];
       return (
-        <div style={{ ...styles.grid, gap: '24px' }}>
+        <div style={{ ...styles.grid, gap: isMobile ? '16px' : '24px' }}>
           <div style={styles.sectionHeader}>
-            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', margin: 0 }}>
+            <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', color: '#1f2937', margin: 0, textAlign: isMobile ? 'center' : 'left' }}>
               {renderEditableInput(friendGroup.title, (value) => updateContent('friends', `${activeSection}.title`, value))}
             </h2>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-end' }}>
               {editMode && (
                 <>
                   <button onClick={() => addFriend(activeSection)} style={styles.addButton}>
@@ -1751,7 +1767,7 @@ const PersonalWebsite = () => {
     switch(activeSection) {
       case 'personal':
         return (
-          <div style={{ ...styles.grid, gap: '32px' }}>
+          <div style={{ ...styles.grid, gap: isMobile ? '24px' : '32px' }}>
             <div style={styles.textCenter}>
               <div style={styles.relative}>
                 {content.personal.profileImage ? (
@@ -1772,7 +1788,7 @@ const PersonalWebsite = () => {
                   </button>
                 )}
               </div>
-              <h2 style={{ fontSize: '36px', fontWeight: '700', color: '#1f2937', marginBottom: '12px', lineHeight: '1.2' }}>
+              <h2 style={{ fontSize: isMobile ? '28px' : isTablet ? '32px' : '36px', fontWeight: '700', color: '#1f2937', marginBottom: '12px', lineHeight: '1.2' }}>
                 {renderEditableInput(content.personal.name, (value) => updateContent('personal', 'name', value))}
               </h2>
               <p style={styles.subtitle}>
@@ -1781,48 +1797,48 @@ const PersonalWebsite = () => {
             </div>
             
             <div style={styles.card}>
-              <h3 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '20px', color: '#1f2937' }}>✨ About Me</h3>
-              <p style={{ color: '#6b7280', lineHeight: '1.7', fontSize: '16px' }}>
+              <h3 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: '600', marginBottom: '20px', color: '#1f2937' }}>✨ About Me</h3>
+              <p style={{ color: '#6b7280', lineHeight: '1.7', fontSize: isMobile ? '14px' : '16px' }}>
                 {renderEditableInput(content.personal.about, (value) => updateContent('personal', 'about', value), 'text', true)}
               </p>
             </div>
 
             <div style={{ ...styles.grid, ...styles.gridMd2 }}>
               <div style={styles.card}>
-                <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '20px', color: '#1f2937' }}>💫 Quick Facts</h3>
-                <div style={{ color: '#6b7280', lineHeight: '2', fontSize: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                    <span style={{ fontWeight: '600', minWidth: '80px', color: '#374151' }}>Age:</span> 
+                <h3 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: '600', marginBottom: '20px', color: '#1f2937' }}>💫 Quick Facts</h3>
+                <div style={{ color: '#6b7280', lineHeight: '2', fontSize: isMobile ? '14px' : '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '4px' : '0' }}>
+                    <span style={{ fontWeight: '600', minWidth: isMobile ? 'auto' : '80px', color: '#374151' }}>Age:</span> 
                     {renderEditableInput(content.personal.age, (value) => updateContent('personal', 'age', value))}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                    <span style={{ fontWeight: '600', minWidth: '80px', color: '#374151' }}>Location:</span> 
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '4px' : '0' }}>
+                    <span style={{ fontWeight: '600', minWidth: isMobile ? 'auto' : '80px', color: '#374151' }}>Location:</span> 
                     {renderEditableInput(content.personal.location, (value) => updateContent('personal', 'location', value))}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                    <span style={{ fontWeight: '600', minWidth: '80px', color: '#374151' }}>Interests:</span> 
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '4px' : '0' }}>
+                    <span style={{ fontWeight: '600', minWidth: isMobile ? 'auto' : '80px', color: '#374151' }}>Interests:</span> 
                     {renderEditableInput(content.personal.interests, (value) => updateContent('personal', 'interests', value))}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span style={{ fontWeight: '600', minWidth: '80px', color: '#374151' }}>Languages:</span> 
+                  <div style={{ display: 'flex', alignItems: 'center', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '4px' : '0' }}>
+                    <span style={{ fontWeight: '600', minWidth: isMobile ? 'auto' : '80px', color: '#374151' }}>Languages:</span> 
                     {renderEditableInput(content.personal.languages, (value) => updateContent('personal', 'languages', value))}
                   </div>
                 </div>
               </div>
 
               <div style={styles.card}>
-                <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '20px', color: '#1f2937' }}>📞 Contact</h3>
-                <div style={{ color: '#6b7280', lineHeight: '2', fontSize: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                    <span style={{ fontWeight: '600', minWidth: '60px', color: '#374151' }}>Email:</span> 
+                <h3 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: '600', marginBottom: '20px', color: '#1f2937' }}>📞 Contact</h3>
+                <div style={{ color: '#6b7280', lineHeight: '2', fontSize: isMobile ? '14px' : '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '4px' : '0' }}>
+                    <span style={{ fontWeight: '600', minWidth: isMobile ? 'auto' : '60px', color: '#374151' }}>Email:</span> 
                     {renderEditableInput(content.personal.email, (value) => updateContent('personal', 'email', value))}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                    <span style={{ fontWeight: '600', minWidth: '60px', color: '#374151' }}>Phone:</span> 
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '4px' : '0' }}>
+                    <span style={{ fontWeight: '600', minWidth: isMobile ? 'auto' : '60px', color: '#374151' }}>Phone:</span> 
                     {renderEditableInput(content.personal.phone, (value) => updateContent('personal', 'phone', value))}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span style={{ fontWeight: '600', minWidth: '60px', color: '#374151' }}>Social:</span> 
+                  <div style={{ display: 'flex', alignItems: 'center', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '4px' : '0' }}>
+                    <span style={{ fontWeight: '600', minWidth: isMobile ? 'auto' : '60px', color: '#374151' }}>Social:</span> 
                     {renderEditableInput(content.personal.social, (value) => updateContent('personal', 'social', value))}
                   </div>
                 </div>
@@ -1833,9 +1849,9 @@ const PersonalWebsite = () => {
 
       case 'collections':
         return (
-          <div style={{ ...styles.grid, gap: '24px' }}>
+          <div style={{ ...styles.grid, gap: isMobile ? '16px' : '24px' }}>
             <div style={styles.sectionHeader}>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', margin: 0 }}>My Collections & Interests</h2>
+              <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', color: '#1f2937', margin: 0, textAlign: isMobile ? 'center' : 'left' }}>My Collections & Interests</h2>
               {editMode && (
                 <button onClick={addCollection} style={styles.addButton}>
                   <Plus size={16} />
@@ -1856,8 +1872,8 @@ const PersonalWebsite = () => {
                     </button>
                   )}
                   <div style={styles.textCenter}>
-                    <div style={{ width: '64px', height: '64px', backgroundColor: '#fef2f2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-                      <span style={{ fontSize: '32px' }}>{editMode ? (
+                    <div style={{ width: isMobile ? '56px' : '64px', height: isMobile ? '56px' : '64px', backgroundColor: '#fef2f2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                      <span style={{ fontSize: isMobile ? '28px' : '32px' }}>{editMode ? (
                         <input
                           type="text"
                           value={collection.icon}
@@ -1866,11 +1882,11 @@ const PersonalWebsite = () => {
                             newCollections[index].icon = e.target.value;
                             updateContent('collections', '', newCollections);
                           }}
-                          style={{ width: '40px', textAlign: 'center', border: 'none', background: 'transparent', fontSize: '32px' }}
+                          style={{ width: '40px', textAlign: 'center', border: 'none', background: 'transparent', fontSize: isMobile ? '28px' : '32px' }}
                         />
                       ) : collection.icon}</span>
                     </div>
-                    <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '12px' }}>
+                    <h3 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '600', color: '#1f2937', marginBottom: '12px' }}>
                       {renderEditableInput(collection.name, (value) => {
                         const newCollections = [...content.collections];
                         newCollections[index].name = value;
@@ -1893,9 +1909,9 @@ const PersonalWebsite = () => {
 
       case 'achievements':
         return (
-          <div style={{ ...styles.grid, gap: '24px' }}>
+          <div style={{ ...styles.grid, gap: isMobile ? '16px' : '24px' }}>
             <div style={styles.sectionHeader}>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', margin: 0 }}>My Achievements</h2>
+              <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', color: '#1f2937', margin: 0, textAlign: isMobile ? 'center' : 'left' }}>My Achievements</h2>
               {editMode && (
                 <button onClick={addAchievement} style={styles.addButton}>
                   <Plus size={16} />
@@ -1916,17 +1932,17 @@ const PersonalWebsite = () => {
                     </button>
                   )}
                   <div style={styles.achievementIcon}>
-                    <Award size={24} color="#d97706" />
+                    <Award size={isMobile ? 20 : 24} color="#d97706" />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '4px' }}>
+                    <h3 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '600', color: '#1f2937', marginBottom: '4px' }}>
                       {renderEditableInput(achievement.title, (value) => {
                         const newAchievements = [...content.achievements];
                         newAchievements[index].title = value;
                         updateContent('achievements', '', newAchievements);
                       })}
                     </h3>
-                    <p style={{ color: '#6b7280', marginBottom: '4px' }}>
+                    <p style={{ color: '#6b7280', marginBottom: '4px', fontSize: isMobile ? '14px' : '16px' }}>
                       {renderEditableInput(achievement.description, (value) => {
                         const newAchievements = [...content.achievements];
                         newAchievements[index].description = value;
@@ -1949,9 +1965,9 @@ const PersonalWebsite = () => {
 
       case 'gallery':
         return (
-          <div style={{ ...styles.grid, gap: '24px' }}>
+          <div style={{ ...styles.grid, gap: isMobile ? '16px' : '24px' }}>
             <div style={styles.sectionHeader}>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', margin: 0 }}>Photo Gallery</h2>
+              <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', color: '#1f2937', margin: 0, textAlign: isMobile ? 'center' : 'left' }}>Photo Gallery</h2>
               {editMode && (
                 <button onClick={addGalleryItem} style={styles.addButton}>
                   <Plus size={16} />
@@ -1988,8 +2004,8 @@ const PersonalWebsite = () => {
                       </>
                     )}
                   </div>
-                  <div style={{ padding: '16px' }}>
-                    <h3 style={{ fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>
+                  <div style={{ padding: isMobile ? '12px' : '16px' }}>
+                    <h3 style={{ fontWeight: '600', color: '#1f2937', marginBottom: '8px', fontSize: isMobile ? '16px' : '18px' }}>
                       {renderEditableInput(photo.title, (value) => {
                         const newGallery = [...content.gallery];
                         newGallery[index].title = value;
@@ -2013,25 +2029,25 @@ const PersonalWebsite = () => {
       case 'advocacy':
         const advocacy = content.advocacy;
         return (
-          <div style={{ ...styles.grid, gap: '24px' }}>
-            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', marginBottom: '24px' }}>Advocacy for Social Change</h2>
+          <div style={{ ...styles.grid, gap: isMobile ? '16px' : '24px' }}>
+            <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', color: '#1f2937', marginBottom: isMobile ? '16px' : '24px', textAlign: isMobile ? 'center' : 'left' }}>Advocacy for Social Change</h2>
             
             <div style={styles.card}>
-              <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '16px' }}>
+              <h3 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: '600', color: '#1f2937', marginBottom: '16px' }}>
                 {renderEditableInput(advocacy.title, (value) => updateContent('advocacy', 'title', value))}
               </h3>
               
-              <div style={{ ...styles.grid, gap: '24px' }}>
+              <div style={{ ...styles.grid, gap: isMobile ? '16px' : '24px' }}>
                 <div>
-                  <h4 style={{ fontWeight: '600', color: '#3b82f6', marginBottom: '8px' }}>The Issue</h4>
-                  <p style={{ color: '#6b7280' }}>
+                  <h4 style={{ fontWeight: '600', color: '#3b82f6', marginBottom: '8px', fontSize: isMobile ? '16px' : '18px' }}>The Issue</h4>
+                  <p style={{ color: '#6b7280', fontSize: isMobile ? '14px' : '16px' }}>
                     {renderEditableInput(advocacy.issue, (value) => updateContent('advocacy', 'issue', value), 'text', true)}
                   </p>
                 </div>
 
                 <div>
                   <div style={styles.sectionHeader}>
-                    <h4 style={{ fontWeight: '600', color: '#3b82f6', margin: 0 }}>Causes</h4>
+                    <h4 style={{ fontWeight: '600', color: '#3b82f6', margin: 0, fontSize: isMobile ? '16px' : '18px' }}>Causes</h4>
                     {editMode && (
                       <button
                         onClick={() => {
@@ -2045,7 +2061,7 @@ const PersonalWebsite = () => {
                       </button>
                     )}
                   </div>
-                  <ul style={{ color: '#6b7280', lineHeight: '1.8', paddingLeft: '20px' }}>
+                  <ul style={{ color: '#6b7280', lineHeight: '1.8', paddingLeft: '20px', fontSize: isMobile ? '14px' : '16px' }}>
                     {advocacy.causes.map((cause, index) => (
                       <li key={index} style={{ marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {editMode ? (
@@ -2078,7 +2094,7 @@ const PersonalWebsite = () => {
 
                 <div>
                   <div style={styles.sectionHeader}>
-                    <h4 style={{ fontWeight: '600', color: '#3b82f6', margin: 0 }}>Effects</h4>
+                    <h4 style={{ fontWeight: '600', color: '#3b82f6', margin: 0, fontSize: isMobile ? '16px' : '18px' }}>Effects</h4>
                     {editMode && (
                       <button
                         onClick={() => {
@@ -2092,7 +2108,7 @@ const PersonalWebsite = () => {
                       </button>
                     )}
                   </div>
-                  <ul style={{ color: '#6b7280', lineHeight: '1.8', paddingLeft: '20px' }}>
+                  <ul style={{ color: '#6b7280', lineHeight: '1.8', paddingLeft: '20px', fontSize: isMobile ? '14px' : '16px' }}>
                     {advocacy.effects.map((effect, index) => (
                       <li key={index} style={{ marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {editMode ? (
@@ -2125,7 +2141,7 @@ const PersonalWebsite = () => {
 
                 <div>
                   <div style={styles.sectionHeader}>
-                    <h4 style={{ fontWeight: '600', color: '#3b82f6', margin: 0 }}>Process of Change</h4>
+                    <h4 style={{ fontWeight: '600', color: '#3b82f6', margin: 0, fontSize: isMobile ? '16px' : '18px' }}>Process of Change</h4>
                     {editMode && (
                       <button
                         onClick={() => {
@@ -2139,7 +2155,7 @@ const PersonalWebsite = () => {
                       </button>
                     )}
                   </div>
-                  <ul style={{ color: '#6b7280', lineHeight: '1.8', paddingLeft: '20px' }}>
+                  <ul style={{ color: '#6b7280', lineHeight: '1.8', paddingLeft: '20px', fontSize: isMobile ? '14px' : '16px' }}>
                     {advocacy.solutions.map((solution, index) => (
                       <li key={index} style={{ marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {editMode ? (
@@ -2173,8 +2189,8 @@ const PersonalWebsite = () => {
             </div>
 
             <div style={styles.card}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '16px' }}>My Actions</h3>
-              <p style={{ color: '#6b7280' }}>
+              <h3 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '600', color: '#1f2937', marginBottom: '16px' }}>My Actions</h3>
+              <p style={{ color: '#6b7280', fontSize: isMobile ? '14px' : '16px' }}>
                 {renderEditableInput(advocacy.myActions, (value) => updateContent('advocacy', 'myActions', value), 'text', true)}
               </p>
             </div>
@@ -2185,7 +2201,7 @@ const PersonalWebsite = () => {
         // Handle parent menu sections with overview pages
         if (activeSection === 'education') {
           return (
-            <div style={{ ...styles.grid, gap: '24px' }}>
+            <div style={{ ...styles.grid, gap: isMobile ? '16px' : '24px' }}>
               <div style={styles.sectionHeader}>
                 <h2 style={styles.sectionTitle}>🎓 My Education Journey</h2>
                 {editMode && (
@@ -2239,8 +2255,8 @@ const PersonalWebsite = () => {
                           <Trash2 size={14} />
                         </button>
                       )}
-                      <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '12px', color: '#667eea' }}>{edu.title}</h3>
-                      <p style={{ color: '#6b7280', fontSize: '16px', marginBottom: '6px', fontWeight: '500' }}>{edu.school}</p>
+                      <h3 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: '600', marginBottom: '12px', color: '#667eea' }}>{edu.title}</h3>
+                      <p style={{ color: '#6b7280', fontSize: isMobile ? '14px' : '16px', marginBottom: '6px', fontWeight: '500' }}>{edu.school}</p>
                       <p style={{ color: '#9ca3af', fontSize: '14px' }}>{edu.years}</p>
                     </div>
                   );
@@ -2252,7 +2268,7 @@ const PersonalWebsite = () => {
         
         if (activeSection === 'family') {
           return (
-            <div style={{ ...styles.grid, gap: '24px' }}>
+            <div style={{ ...styles.grid, gap: isMobile ? '16px' : '24px' }}>
               <div style={styles.sectionHeader}>
                 <h2 style={styles.sectionTitle}>👨‍👩‍👧‍👦 My Beautiful Family</h2>
                 {editMode && (
@@ -2331,14 +2347,14 @@ const PersonalWebsite = () => {
                       )}
                       <div style={{ marginBottom: '20px', marginTop: '12px' }}>
                         {firstMember.image ? (
-                          <img src={firstMember.image} alt={firstMember.name} style={{ ...styles.avatarSmall, margin: '0 auto', width: '80px', height: '80px' }} />
+                          <img src={firstMember.image} alt={firstMember.name} style={{ ...styles.avatarSmall, margin: '0 auto', width: isMobile ? '64px' : '80px', height: isMobile ? '64px' : '80px' }} />
                         ) : (
-                          <div style={{ ...styles.avatarPlaceholder, margin: '0 auto', width: '80px', height: '80px', fontSize: '32px' }}>
+                          <div style={{ ...styles.avatarPlaceholder, margin: '0 auto', width: isMobile ? '64px' : '80px', height: isMobile ? '64px' : '80px', fontSize: isMobile ? '24px' : '32px' }}>
                             {firstMember.name.charAt(0)}
                           </div>
                         )}
                       </div>
-                      <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>{familyGroup.title}</h3>
+                      <h3 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>{familyGroup.title}</h3>
                       <p style={{ color: '#6b7280', fontSize: '12px', marginBottom: '8px' }}>
                         {familyGroup.list.length} {familyGroup.list.length === 1 ? 'member' : 'members'}
                       </p>
@@ -2371,7 +2387,7 @@ const PersonalWebsite = () => {
         
         if (activeSection === 'friends') {
           return (
-            <div style={{ ...styles.grid, gap: '24px' }}>
+            <div style={{ ...styles.grid, gap: isMobile ? '16px' : '24px' }}>
               <div style={styles.sectionHeader}>
                 <h2 style={styles.sectionTitle}>🌟 My Amazing Friends</h2>
                 {editMode && (
@@ -2425,11 +2441,11 @@ const PersonalWebsite = () => {
                           <Trash2 size={14} />
                         </button>
                       )}
-                      <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '12px', color: '#667eea' }}>{group.title}</h3>
+                      <h3 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: '600', marginBottom: '12px', color: '#667eea' }}>{group.title}</h3>
                       <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '16px', lineHeight: '1.5' }}>{group.description}</p>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                         {group.list.slice(0, 5).map((friend, index) => (
-                          <div key={index} style={{ ...styles.avatarPlaceholder, width: '36px', height: '36px', fontSize: '14px', background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)' }}>
+                          <div key={index} style={{ ...styles.avatarPlaceholder, width: isMobile ? '32px' : '36px', height: isMobile ? '32px' : '36px', fontSize: isMobile ? '12px' : '14px', background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)' }}>
                             {friend.name.charAt(0)}
                           </div>
                         ))}
@@ -2445,7 +2461,7 @@ const PersonalWebsite = () => {
           );
         }
         
-        return <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Please select a section from the menu</div>;
+        return <div style={{ padding: isMobile ? '20px' : '40px', textAlign: 'center', color: '#6b7280' }}>Please select a section from the menu</div>;
     }
   };
 
@@ -2464,7 +2480,7 @@ const PersonalWebsite = () => {
     return (
       <div style={styles.loginModal}>
         <div style={styles.loginCard}>
-          <h2 style={{ fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '24px' }}>Admin Login</h2>
+          <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '24px' }}>Admin Login</h2>
           <form onSubmit={handleLogin}>
             <div style={styles.formGroup}>
               <label style={styles.label}>Username</label>
@@ -2521,7 +2537,7 @@ const PersonalWebsite = () => {
                       onMouseEnter={(e) => Object.assign(e.target.style, styles.logoPlaceholderHover)}
                       onMouseLeave={(e) => Object.assign(e.target.style, styles.logoPlaceholder)}
                     >
-                      <Upload size={20} color="rgba(255, 255, 255, 0.7)" />
+                      <Upload size={isMobile ? 16 : 20} color="rgba(255, 255, 255, 0.7)" />
                     </div>
                   )
                 )}
@@ -2550,7 +2566,7 @@ const PersonalWebsite = () => {
               <h1 style={styles.title}>✨ Personal Portfolio ✨</h1>
               
               {/* Cloud Status Indicator */}
-              {isAdmin && (
+              {isAdmin && !isMobile && (
                 <div style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
@@ -2593,46 +2609,54 @@ const PersonalWebsite = () => {
                         onMouseLeave={(e) => Object.assign(e.target.style, { ...styles.button, ...styles.buttonGreen })}
                       >
                         <Save size={16} />
-                        <span>Save</span>
+                        <span>{isMobile ? '' : 'Save'}</span>
                       </button>
                       
-                      <button onClick={addEducationLevel} style={styles.button}>
-                        <Plus size={16} />
-                        <span>Add Education</span>
-                      </button>
-                      
-                      <button onClick={addFamilyMember} style={styles.button}>
-                        <Plus size={16} />
-                        <span>Add Family</span>
-                      </button>
-                      
-                      <button onClick={addFriendsCategory} style={styles.button}>
-                        <Plus size={16} />
-                        <span>Add Friends Group</span>
-                      </button>
+                      {!isMobile && (
+                        <>
+                          <button onClick={addEducationLevel} style={styles.button}>
+                            <Plus size={16} />
+                            <span>Add Education</span>
+                          </button>
+                          
+                          <button onClick={addFamilyMember} style={styles.button}>
+                            <Plus size={16} />
+                            <span>Add Family</span>
+                          </button>
+                          
+                          <button onClick={addFriendsCategory} style={styles.button}>
+                            <Plus size={16} />
+                            <span>Add Friends Group</span>
+                          </button>
+                        </>
+                      )}
                     </>
                   )}
                   
-                  <button
-                    onClick={exportData}
-                    style={styles.button}
-                  >
-                    <Download size={16} />
-                    <span>Export</span>
-                  </button>
-                  
-                  <label style={{ ...styles.button, cursor: 'pointer' }}>
-                    <Upload size={16} />
-                    <span>Import</span>
-                    <input type="file" accept=".json" onChange={importData} style={styles.hiddenInput} />
-                  </label>
+                  {!isMobile && (
+                    <>
+                      <button
+                        onClick={exportData}
+                        style={styles.button}
+                      >
+                        <Download size={16} />
+                        <span>Export</span>
+                      </button>
+                      
+                      <label style={{ ...styles.button, cursor: 'pointer' }}>
+                        <Upload size={16} />
+                        <span>Import</span>
+                        <input type="file" accept=".json" onChange={importData} style={styles.hiddenInput} />
+                      </label>
+                    </>
+                  )}
                   
                   <button
                     onClick={handleLogout}
                     style={{ ...styles.button, ...styles.buttonRed }}
                   >
                     <LogOut size={16} />
-                    <span>Logout</span>
+                    <span>{isMobile ? '' : 'Logout'}</span>
                   </button>
                 </>
               )}
@@ -2768,7 +2792,7 @@ const PersonalWebsite = () => {
                 style={styles.mobileMenuButton}
               >
                 {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                <span style={{ marginLeft: '8px' }}>Menu</span>
+                <span>Menu</span>
               </button>
               
               {mobileMenuOpen && (
@@ -2829,18 +2853,18 @@ const PersonalWebsite = () => {
       {(hasMultimediaContent() || isAdmin) && (
         <section style={styles.multimedia}>
           <div style={styles.multimediaContent}>
-            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', marginBottom: '24px', textAlign: 'center' }}>Multimedia</h2>
+            <h2 style={{ fontSize: isMobile ? '20px' : '24px', fontWeight: 'bold', color: '#1f2937', marginBottom: isMobile ? '16px' : '24px', textAlign: 'center' }}>Multimedia</h2>
             
             <div style={styles.multimediaGrid}>
               {/* Audio Section */}
               {(content.multimedia.audio.file || isAdmin) && (
                 <div style={styles.multimediaCard}>
-                  <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h3 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '600', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Music size={20} />
                     Audio Clip
                   </h3>
                   <div style={styles.multimediaInner}>
-                    <p style={{ color: '#6b7280', marginBottom: '12px' }}>
+                    <p style={{ color: '#6b7280', marginBottom: '12px', fontSize: isMobile ? '14px' : '16px' }}>
                       {renderEditableInput(content.multimedia.audio.title, (value) => updateContent('multimedia', 'audio.title', value))}
                     </p>
                     {content.multimedia.audio.file ? (
@@ -2869,12 +2893,12 @@ const PersonalWebsite = () => {
               {/* Video Section */}
               {(content.multimedia.video.file || isAdmin) && (
                 <div style={styles.multimediaCard}>
-                  <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h3 style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '600', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Play size={20} />
                     Video Clip
                   </h3>
                   <div style={styles.multimediaInner}>
-                    <p style={{ color: '#6b7280', marginBottom: '12px' }}>
+                    <p style={{ color: '#6b7280', marginBottom: '12px', fontSize: isMobile ? '14px' : '16px' }}>
                       {renderEditableInput(content.multimedia.video.title, (value) => updateContent('multimedia', 'video.title', value))}
                     </p>
                     {content.multimedia.video.file ? (
@@ -2908,8 +2932,8 @@ const PersonalWebsite = () => {
       <footer style={styles.footer}>
         <div style={styles.footerOverlay}></div>
         <div style={styles.footerContent}>
-          <p style={{ fontSize: '16px', fontWeight: '500', marginBottom: '8px' }}>&copy; 2024 My Personal Website. All rights reserved.</p>
-          <p style={{ color: '#cbd5e1', fontSize: '14px' }}>Built with ❤️ and React | Admin: veronica/veronica</p>
+          <p style={{ fontSize: isMobile ? '14px' : '16px', fontWeight: '500', marginBottom: '8px' }}>&copy; 2024 My Personal Website. All rights reserved.</p>
+          <p style={{ color: '#cbd5e1', fontSize: isMobile ? '12px' : '14px' }}>Built with ❤️ and React | Admin: veronica/veronica</p>
           {cloudStatus === 'offline' && (
             <p style={{ color: '#fbbf24', fontSize: '12px', marginTop: '8px' }}>
               ⚠️ GitHub API not configured. Changes only visible locally. 
