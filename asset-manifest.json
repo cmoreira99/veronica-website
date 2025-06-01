@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/veronica-website/static/css/main.e6c13ad2.css",
+    "main.js": "/veronica-website/static/js/main.8f14380e.js",
+    "static/js/453.a320d944.chunk.js": "/veronica-website/static/js/453.a320d944.chunk.js",
+    "index.html": "/veronica-website/index.html",
+    "main.e6c13ad2.css.map": "/veronica-website/static/css/main.e6c13ad2.css.map",
+    "main.8f14380e.js.map": "/veronica-website/static/js/main.8f14380e.js.map",
+    "453.a320d944.chunk.js.map": "/veronica-website/static/js/453.a320d944.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.8f14380e.js"
+  ]
+}
