@@ -9,13 +9,16 @@ const PersonalWebsite = () => {
   const [editMode, setEditMode] = useState(false);
   const [cloudStatus, setCloudStatus] = useState('checking'); // 'checking', 'online', 'offline'
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(() => {
-    // Safe initialization for SSR/production
+  
+  // Initialize window width with a default value to prevent SSR issues
+  const [windowWidth, setWindowWidth] = useState(1024);
+  
+  // Initialize window width after component mounts
+  useEffect(() => {
     if (typeof window !== 'undefined') {
-      return window.innerWidth;
+      setWindowWidth(window.innerWidth);
     }
-    return 1024; // Default width for server-side rendering
-  });
+  }, []);
   
   const [content, setContent] = useState({
     logo: null,
@@ -149,10 +152,18 @@ const PersonalWebsite = () => {
     }
   });
 
-  // Calculate responsive breakpoints safely
-  const isMobile = useMemo(() => (windowWidth || 1024) <= 768, [windowWidth]);
-  const isTablet = useMemo(() => (windowWidth || 1024) > 768 && (windowWidth || 1024) <= 1024, [windowWidth]);
-  const isSmallMobile = useMemo(() => (windowWidth || 1024) <= 480, [windowWidth]);
+  // Calculate responsive breakpoints - moved outside of useMemo to prevent circular dependencies
+  const getResponsiveInfo = useCallback((width) => {
+    const w = width || 1024;
+    return {
+      isMobile: w <= 768,
+      isTablet: w > 768 && w <= 1024,
+      isSmallMobile: w <= 480
+    };
+  }, []);
+
+  const responsiveInfo = useMemo(() => getResponsiveInfo(windowWidth), [windowWidth, getResponsiveInfo]);
+  const { isMobile, isTablet, isSmallMobile } = responsiveInfo;
 
   // Dynamic menu generation - memoized to prevent unnecessary recalculations
   const menuItems = useMemo(() => {
@@ -908,586 +919,580 @@ const PersonalWebsite = () => {
     }
   }), []);
 
-  // Create responsive styles safely
-  const responsiveStyles = useMemo(() => {
-    const mobile = isMobile;
-    const tablet = isTablet;
-    const smallMobile = isSmallMobile;
-
-    return {
-      headerContent: {
-        maxWidth: mobile ? '100%' : '1400px',
-        margin: '0 auto',
-        padding: mobile ? '12px 16px' : '20px 24px',
-        position: 'relative',
-        zIndex: 2
-      },
-      headerTop: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: mobile ? 'flex-start' : 'center',
-        marginBottom: mobile ? '12px' : '20px',
-        flexDirection: mobile ? 'column' : 'row',
-        gap: mobile ? '12px' : '0'
-      },
-      logoSection: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: mobile ? '12px' : '16px',
-        width: mobile ? '100%' : 'auto'
-      },
-      logo: {
-        width: mobile ? '36px' : '48px',
-        height: mobile ? '36px' : '48px',
-        borderRadius: mobile ? '8px' : '12px',
-        objectFit: 'cover',
-        border: '2px solid rgba(255, 255, 255, 0.3)',
-        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
-      },
-      logoPlaceholder: {
-        width: mobile ? '36px' : '48px',
-        height: mobile ? '36px' : '48px',
-        borderRadius: mobile ? '8px' : '12px',
-        background: 'rgba(255, 255, 255, 0.2)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        border: '2px dashed rgba(255, 255, 255, 0.4)',
-        cursor: 'pointer',
-        transition: 'all 0.3s ease'
-      },
-      logoPlaceholderHover: {
-        background: 'rgba(255, 255, 255, 0.3)',
-        borderColor: 'rgba(255, 255, 255, 0.6)'
-      },
-      title: {
-        fontSize: mobile ? '18px' : tablet ? '24px' : '28px',
-        fontWeight: '700',
-        margin: 0,
-        background: 'linear-gradient(45deg, #ffffff 0%, #f8fafc 100%)',
-        backgroundClip: 'text',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        textShadow: '0 2px 10px rgba(0,0,0,0.1)',
-        flex: 1
-      },
-      adminControls: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: mobile ? '6px' : '12px',
-        flexWrap: 'wrap',
-        width: mobile ? '100%' : 'auto',
-        justifyContent: mobile ? 'flex-start' : 'flex-end'
-      },
-      button: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: mobile ? '4px' : '8px',
-        padding: mobile ? '8px 12px' : '10px 18px',
-        backgroundColor: 'rgba(255, 255, 255, 0.15)',
-        color: 'white',
-        border: 'none',
-        borderRadius: mobile ? '8px' : '12px',
-        cursor: 'pointer',
-        fontSize: mobile ? '12px' : '14px',
-        fontWeight: '500',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        backdropFilter: 'blur(10px)',
-        boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
-      },
-      buttonHover: {
-        backgroundColor: 'rgba(255, 255, 255, 0.25)',
-        transform: 'translateY(-2px)',
-        boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
-      },
-      buttonGreen: {
-        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
-      },
-      buttonRed: {
-        background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-        boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
-      },
-      buttonSmall: {
-        padding: mobile ? '4px 8px' : '6px 12px',
-        fontSize: mobile ? '10px' : '12px',
-        borderRadius: '8px'
-      },
-      nav: {
-        display: mobile ? 'none' : 'flex',
-        flexWrap: 'wrap',
-        gap: tablet ? '6px' : '8px'
-      },
-      mobileMenuButton: {
-        display: mobile ? 'flex' : 'none',
-        alignItems: 'center',
-        gap: '8px',
-        padding: '10px 16px',
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        color: 'white',
-        border: 'none',
-        borderRadius: '8px',
-        cursor: 'pointer',
-        fontSize: '16px',
-        width: '100%',
-        justifyContent: 'center'
-      },
-      mobileMenuOpen: {
-        display: 'block',
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        color: '#374151',
-        borderRadius: '12px',
-        marginTop: '16px',
-        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)',
-        backdropFilter: 'blur(20px)',
-        overflow: 'hidden'
-      },
-      mobileMenuItem: {
-        display: 'flex',
-        alignItems: 'center',
-        width: '100%',
-        padding: '16px 20px',
-        backgroundColor: 'transparent',
-        color: '#374151',
-        border: 'none',
-        textAlign: 'left',
-        cursor: 'pointer',
-        fontSize: '16px',
-        fontWeight: '500',
-        borderBottom: '1px solid rgba(0,0,0,0.05)',
-        transition: 'all 0.2s ease'
-      },
-      mobileSubItem: {
-        paddingLeft: '40px',
-        backgroundColor: '#f8fafc',
-        fontSize: '14px'
-      },
-      navItem: {
-        position: 'relative',
-        zIndex: 1001
-      },
-      navButton: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: tablet ? '6px' : '8px',
-        padding: tablet ? '10px 16px' : '12px 20px',
-        backgroundColor: 'transparent',
-        color: 'white',
-        border: 'none',
-        borderRadius: '12px',
-        cursor: 'pointer',
-        fontSize: tablet ? '13px' : '14px',
-        fontWeight: '500',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        backdropFilter: 'blur(10px)'
-      },
-      navButtonActive: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        boxShadow: '0 4px 15px rgba(255,255,255,0.1)',
-        transform: 'translateY(-1px)'
-      },
-      navButtonHover: {
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        transform: 'translateY(-1px)'
-      },
-      dropdown: {
-        position: 'absolute',
-        left: 0,
-        top: '100%',
-        marginTop: '8px',
-        width: '220px',
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        color: '#374151',
-        borderRadius: '16px',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
-        opacity: 0,
-        visibility: 'hidden',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        zIndex: 99999,
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        overflow: 'hidden'
-      },
-      dropdownVisible: {
-        opacity: 1,
-        visibility: 'visible',
-        transform: 'translateY(0)'
-      },
-      dropdownItem: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '100%',
-        textAlign: 'left',
-        padding: '12px 16px',
-        backgroundColor: 'transparent',
-        color: '#374151',
-        border: 'none',
-        cursor: 'pointer',
-        fontSize: '14px',
-        transition: 'all 0.2s ease',
-        borderBottom: '1px solid rgba(0,0,0,0.05)'
-      },
-      dropdownItemHover: {
-        backgroundColor: 'rgba(102, 126, 234, 0.08)',
-        color: '#667eea'
-      },
-      main: {
-        maxWidth: mobile ? '100%' : '1400px',
-        margin: '0 auto',
-        padding: mobile ? '20px 16px' : tablet ? '30px 20px' : '40px 24px',
-        flex: 1,
-        position: 'relative',
-        zIndex: 1
-      },
-      card: {
-        backgroundColor: 'white',
-        borderRadius: mobile ? '16px' : '20px',
-        padding: mobile ? '20px' : tablet ? '24px' : '32px',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.06)',
-        marginBottom: mobile ? '16px' : '24px',
-        border: '1px solid rgba(255, 255, 255, 0.8)',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        position: 'relative',
-        overflow: 'hidden'
-      },
-      cardHover: {
-        transform: 'translateY(-4px)',
-        boxShadow: '0 16px 40px rgba(0, 0, 0, 0.12)',
-        borderColor: 'rgba(102, 126, 234, 0.2)'
-      },
-      cardGlow: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '1px',
-        background: 'linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.5), transparent)',
-        opacity: 0,
-        transition: 'opacity 0.3s ease'
-      },
-      grid: {
-        display: 'grid',
-        gap: mobile ? '16px' : '24px'
-      },
-      gridMd2: {
-        gridTemplateColumns: mobile ? '1fr' : tablet ? 'repeat(auto-fit, minmax(280px, 1fr))' : 'repeat(auto-fit, minmax(320px, 1fr))'
-      },
-      gridLg3: {
-        gridTemplateColumns: mobile ? '1fr' : smallMobile ? '1fr' : tablet ? 'repeat(auto-fit, minmax(240px, 1fr))' : 'repeat(auto-fit, minmax(280px, 1fr))'
-      },
-      profileImage: {
-        width: mobile ? '100px' : tablet ? '120px' : '140px',
-        height: mobile ? '100px' : tablet ? '120px' : '140px',
-        borderRadius: '50%',
-        margin: mobile ? '0 auto 20px' : '0 auto 32px',
-        objectFit: 'cover',
-        border: '4px solid rgba(102, 126, 234, 0.1)',
-        boxShadow: '0 8px 30px rgba(102, 126, 234, 0.2)'
-      },
-      profilePlaceholder: {
-        width: mobile ? '100px' : tablet ? '120px' : '140px',
-        height: mobile ? '100px' : tablet ? '120px' : '140px',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-        borderRadius: '50%',
-        margin: mobile ? '0 auto 20px' : '0 auto 32px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'white',
-        fontSize: mobile ? '40px' : tablet ? '48px' : '56px',
-        fontWeight: '700',
-        boxShadow: '0 8px 30px rgba(102, 126, 234, 0.3)',
-        border: '4px solid rgba(255, 255, 255, 0.2)'
-      },
-      avatarSmall: {
-        width: mobile ? '60px' : '72px',
-        height: mobile ? '60px' : '72px',
-        borderRadius: '50%',
-        objectFit: 'cover',
-        border: '3px solid rgba(102, 126, 234, 0.1)',
-        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
-      },
-      avatarPlaceholder: {
-        width: mobile ? '60px' : '72px',
-        height: mobile ? '60px' : '72px',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        borderRadius: '50%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'white',
-        fontSize: mobile ? '20px' : '28px',
-        fontWeight: '600',
-        boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
-        border: '3px solid rgba(255, 255, 255, 0.2)'
-      },
-      achievementItem: {
-        display: 'flex',
-        alignItems: mobile ? 'flex-start' : 'center',
-        gap: mobile ? '12px' : '20px',
-        backgroundColor: 'white',
-        borderRadius: mobile ? '16px' : '20px',
-        padding: mobile ? '20px' : '28px',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.06)',
-        marginBottom: '16px',
-        border: '1px solid rgba(255, 255, 255, 0.8)',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        position: 'relative',
-        overflow: 'hidden',
-        flexDirection: mobile ? 'column' : 'row',
-        textAlign: mobile ? 'center' : 'left'
-      },
-      achievementIcon: {
-        width: mobile ? '48px' : '56px',
-        height: mobile ? '48px' : '56px',
-        background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-        borderRadius: mobile ? '12px' : '16px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: '0 4px 15px rgba(251, 191, 36, 0.3)',
-        margin: mobile ? '0 auto' : '0'
-      },
-      galleryItem: {
-        backgroundColor: 'white',
-        borderRadius: mobile ? '16px' : '20px',
-        overflow: 'hidden',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.06)',
-        border: '1px solid rgba(255, 255, 255, 0.8)',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        position: 'relative'
-      },
-      galleryImage: {
-        width: '100%',
-        height: mobile ? '180px' : tablet ? '200px' : '220px',
-        objectFit: 'cover'
-      },
-      galleryPlaceholder: {
-        width: '100%',
-        height: mobile ? '180px' : tablet ? '200px' : '220px',
-        background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #ddd6fe 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      },
-      multimedia: {
-        backgroundColor: 'white',
-        padding: mobile ? '32px 0' : '48px 0',
-        borderTop: '1px solid rgba(102, 126, 234, 0.1)',
-        position: 'relative'
-      },
-      multimediaContent: {
-        maxWidth: mobile ? '100%' : '1400px',
-        margin: '0 auto',
-        padding: mobile ? '0 16px' : '0 24px'
-      },
-      multimediaGrid: {
-        display: 'grid',
-        gridTemplateColumns: mobile ? '1fr' : tablet ? '1fr' : 'repeat(auto-fit, minmax(420px, 1fr))',
-        gap: mobile ? '24px' : '32px'
-      },
-      multimediaCard: {
-        background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-        borderRadius: mobile ? '20px' : '24px',
-        padding: mobile ? '24px' : '32px',
-        border: '1px solid rgba(102, 126, 234, 0.1)',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)'
-      },
-      multimediaInner: {
-        backgroundColor: 'white',
-        borderRadius: '16px',
-        padding: mobile ? '20px' : '24px',
-        textAlign: 'center',
-        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.04)',
-        border: '1px solid rgba(255, 255, 255, 0.8)'
-      },
-      mediaPlaceholder: {
-        width: '100%',
-        height: mobile ? '120px' : '160px',
-        background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
-        borderRadius: '12px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '20px',
-        border: '2px dashed rgba(102, 126, 234, 0.2)'
-      },
-      footerContent: {
-        maxWidth: mobile ? '100%' : '1400px',
-        margin: '0 auto',
-        padding: mobile ? '0 16px' : '0 24px',
-        position: 'relative',
-        zIndex: 2
-      },
-      loginCard: {
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        padding: mobile ? '30px 20px' : '40px',
-        borderRadius: '24px',
-        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2)',
-        width: mobile ? '100%' : '420px',
-        maxWidth: '90vw',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.3)'
-      },
-      formGroup: {
-        marginBottom: '24px'
-      },
-      label: {
-        display: 'block',
-        color: '#374151',
-        fontSize: '14px',
-        fontWeight: '600',
-        marginBottom: '8px'
-      },
-      input: {
-        width: '100%',
-        padding: '14px 16px',
-        border: '2px solid #e5e7eb',
-        borderRadius: '12px',
-        fontSize: '16px',
-        outline: 'none',
-        transition: 'all 0.3s ease',
-        fontFamily: 'inherit',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)'
-      },
-      inputFocus: {
-        borderColor: '#667eea',
-        boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)',
-        backgroundColor: 'white'
-      },
-      buttonPrimary: {
-        flex: 1,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white',
-        padding: '14px 24px',
-        borderRadius: '12px',
-        border: 'none',
-        cursor: 'pointer',
-        fontSize: '16px',
-        fontWeight: '600',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
-      },
-      buttonPrimaryHover: {
-        transform: 'translateY(-2px)',
-        boxShadow: '0 8px 25px rgba(102, 126, 234, 0.4)'
-      },
-      buttonSecondary: {
-        flex: 1,
-        backgroundColor: '#f3f4f6',
-        color: '#374151',
-        padding: '14px 24px',
-        borderRadius: '12px',
-        border: 'none',
-        cursor: 'pointer',
-        fontSize: '16px',
-        fontWeight: '500',
-        transition: 'all 0.3s ease'
-      },
-      flexRow: {
-        display: 'flex',
-        gap: '16px',
-        flexDirection: mobile ? 'column' : 'row'
-      },
-      uploadButton: {
-        position: 'absolute',
-        bottom: '8px',
-        right: '8px',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white',
-        padding: mobile ? '8px' : '10px',
-        borderRadius: '50%',
-        border: 'none',
-        cursor: 'pointer',
-        boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
-        transition: 'all 0.3s ease'
-      },
-      uploadButtonHover: {
-        transform: 'scale(1.1)',
-        boxShadow: '0 6px 20px rgba(102, 126, 234, 0.4)'
-      },
-      deleteButton: {
-        position: 'absolute',
-        top: '12px',
-        right: '12px',
-        background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-        color: 'white',
-        padding: mobile ? '6px' : '8px',
-        borderRadius: '50%',
-        border: 'none',
-        cursor: 'pointer',
-        boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)',
-        transition: 'all 0.3s ease',
-        zIndex: 10
-      },
-      deleteButtonHover: {
-        transform: 'scale(1.1)',
-        boxShadow: '0 6px 20px rgba(239, 68, 68, 0.4)'
-      },
-      sectionHeader: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: mobile ? '20px' : '32px',
-        flexDirection: mobile ? 'column' : 'row',
-        gap: mobile ? '12px' : '0'
-      },
-      addButton: {
-        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-        color: 'white',
-        border: 'none',
-        borderRadius: '12px',
-        padding: mobile ? '10px 16px' : '12px 20px',
-        cursor: 'pointer',
-        fontSize: mobile ? '12px' : '14px',
-        fontWeight: '500',
-        display: 'flex',
-        alignItems: 'center',
-        gap: mobile ? '6px' : '8px',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
-      },
-      addButtonHover: {
-        transform: 'translateY(-2px)',
-        boxShadow: '0 8px 25px rgba(16, 185, 129, 0.4)'
-      },
-      sectionTitle: {
-        fontSize: mobile ? '24px' : tablet ? '28px' : '32px',
-        fontWeight: '700',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        backgroundClip: 'text',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        margin: 0,
-        lineHeight: 1.2,
-        textAlign: mobile ? 'center' : 'left'
-      },
-      subtitle: {
-        fontSize: mobile ? '16px' : '18px',
-        color: '#6b7280',
-        fontWeight: '400',
-        lineHeight: 1.5
-      },
-      overviewCard: {
-        cursor: 'pointer',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        position: 'relative',
-        overflow: 'hidden'
-      },
-      overviewCardHover: {
-        transform: 'translateY(-6px)',
-        boxShadow: '0 20px 50px rgba(102, 126, 234, 0.15)'
-      },
-      gradientText: {
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        backgroundClip: 'text',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        fontWeight: '600'
-      }
-    };
-  }, [isMobile, isTablet, isSmallMobile]);
+  // Create responsive styles using the responsive info
+  const responsiveStyles = useMemo(() => ({
+    headerContent: {
+      maxWidth: isMobile ? '100%' : '1400px',
+      margin: '0 auto',
+      padding: isMobile ? '12px 16px' : '20px 24px',
+      position: 'relative',
+      zIndex: 2
+    },
+    headerTop: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: isMobile ? 'flex-start' : 'center',
+      marginBottom: isMobile ? '12px' : '20px',
+      flexDirection: isMobile ? 'column' : 'row',
+      gap: isMobile ? '12px' : '0'
+    },
+    logoSection: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: isMobile ? '12px' : '16px',
+      width: isMobile ? '100%' : 'auto'
+    },
+    logo: {
+      width: isMobile ? '36px' : '48px',
+      height: isMobile ? '36px' : '48px',
+      borderRadius: isMobile ? '8px' : '12px',
+      objectFit: 'cover',
+      border: '2px solid rgba(255, 255, 255, 0.3)',
+      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
+    },
+    logoPlaceholder: {
+      width: isMobile ? '36px' : '48px',
+      height: isMobile ? '36px' : '48px',
+      borderRadius: isMobile ? '8px' : '12px',
+      background: 'rgba(255, 255, 255, 0.2)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      border: '2px dashed rgba(255, 255, 255, 0.4)',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease'
+    },
+    logoPlaceholderHover: {
+      background: 'rgba(255, 255, 255, 0.3)',
+      borderColor: 'rgba(255, 255, 255, 0.6)'
+    },
+    title: {
+      fontSize: isMobile ? '18px' : isTablet ? '24px' : '28px',
+      fontWeight: '700',
+      margin: 0,
+      background: 'linear-gradient(45deg, #ffffff 0%, #f8fafc 100%)',
+      backgroundClip: 'text',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      textShadow: '0 2px 10px rgba(0,0,0,0.1)',
+      flex: 1
+    },
+    adminControls: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: isMobile ? '6px' : '12px',
+      flexWrap: 'wrap',
+      width: isMobile ? '100%' : 'auto',
+      justifyContent: isMobile ? 'flex-start' : 'flex-end'
+    },
+    button: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: isMobile ? '4px' : '8px',
+      padding: isMobile ? '8px 12px' : '10px 18px',
+      backgroundColor: 'rgba(255, 255, 255, 0.15)',
+      color: 'white',
+      border: 'none',
+      borderRadius: isMobile ? '8px' : '12px',
+      cursor: 'pointer',
+      fontSize: isMobile ? '12px' : '14px',
+      fontWeight: '500',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      backdropFilter: 'blur(10px)',
+      boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+    },
+    buttonHover: {
+      backgroundColor: 'rgba(255, 255, 255, 0.25)',
+      transform: 'translateY(-2px)',
+      boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+    },
+    buttonGreen: {
+      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
+    },
+    buttonRed: {
+      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+      boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
+    },
+    buttonSmall: {
+      padding: isMobile ? '4px 8px' : '6px 12px',
+      fontSize: isMobile ? '10px' : '12px',
+      borderRadius: '8px'
+    },
+    nav: {
+      display: isMobile ? 'none' : 'flex',
+      flexWrap: 'wrap',
+      gap: isTablet ? '6px' : '8px'
+    },
+    mobileMenuButton: {
+      display: isMobile ? 'flex' : 'none',
+      alignItems: 'center',
+      gap: '8px',
+      padding: '10px 16px',
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontSize: '16px',
+      width: '100%',
+      justifyContent: 'center'
+    },
+    mobileMenuOpen: {
+      display: 'block',
+      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+      color: '#374151',
+      borderRadius: '12px',
+      marginTop: '16px',
+      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)',
+      backdropFilter: 'blur(20px)',
+      overflow: 'hidden'
+    },
+    mobileMenuItem: {
+      display: 'flex',
+      alignItems: 'center',
+      width: '100%',
+      padding: '16px 20px',
+      backgroundColor: 'transparent',
+      color: '#374151',
+      border: 'none',
+      textAlign: 'left',
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: '500',
+      borderBottom: '1px solid rgba(0,0,0,0.05)',
+      transition: 'all 0.2s ease'
+    },
+    mobileSubItem: {
+      paddingLeft: '40px',
+      backgroundColor: '#f8fafc',
+      fontSize: '14px'
+    },
+    navItem: {
+      position: 'relative',
+      zIndex: 1001
+    },
+    navButton: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: isTablet ? '6px' : '8px',
+      padding: isTablet ? '10px 16px' : '12px 20px',
+      backgroundColor: 'transparent',
+      color: 'white',
+      border: 'none',
+      borderRadius: '12px',
+      cursor: 'pointer',
+      fontSize: isTablet ? '13px' : '14px',
+      fontWeight: '500',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      backdropFilter: 'blur(10px)'
+    },
+    navButtonActive: {
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      boxShadow: '0 4px 15px rgba(255,255,255,0.1)',
+      transform: 'translateY(-1px)'
+    },
+    navButtonHover: {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      transform: 'translateY(-1px)'
+    },
+    dropdown: {
+      position: 'absolute',
+      left: 0,
+      top: '100%',
+      marginTop: '8px',
+      width: '220px',
+      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+      color: '#374151',
+      borderRadius: '16px',
+      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
+      opacity: 0,
+      visibility: 'hidden',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      zIndex: 99999,
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      overflow: 'hidden'
+    },
+    dropdownVisible: {
+      opacity: 1,
+      visibility: 'visible',
+      transform: 'translateY(0)'
+    },
+    dropdownItem: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      width: '100%',
+      textAlign: 'left',
+      padding: '12px 16px',
+      backgroundColor: 'transparent',
+      color: '#374151',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '14px',
+      transition: 'all 0.2s ease',
+      borderBottom: '1px solid rgba(0,0,0,0.05)'
+    },
+    dropdownItemHover: {
+      backgroundColor: 'rgba(102, 126, 234, 0.08)',
+      color: '#667eea'
+    },
+    main: {
+      maxWidth: isMobile ? '100%' : '1400px',
+      margin: '0 auto',
+      padding: isMobile ? '20px 16px' : isTablet ? '30px 20px' : '40px 24px',
+      flex: 1,
+      position: 'relative',
+      zIndex: 1
+    },
+    card: {
+      backgroundColor: 'white',
+      borderRadius: isMobile ? '16px' : '20px',
+      padding: isMobile ? '20px' : isTablet ? '24px' : '32px',
+      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.06)',
+      marginBottom: isMobile ? '16px' : '24px',
+      border: '1px solid rgba(255, 255, 255, 0.8)',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      position: 'relative',
+      overflow: 'hidden'
+    },
+    cardHover: {
+      transform: 'translateY(-4px)',
+      boxShadow: '0 16px 40px rgba(0, 0, 0, 0.12)',
+      borderColor: 'rgba(102, 126, 234, 0.2)'
+    },
+    cardGlow: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: '1px',
+      background: 'linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.5), transparent)',
+      opacity: 0,
+      transition: 'opacity 0.3s ease'
+    },
+    grid: {
+      display: 'grid',
+      gap: isMobile ? '16px' : '24px'
+    },
+    gridMd2: {
+      gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(auto-fit, minmax(280px, 1fr))' : 'repeat(auto-fit, minmax(320px, 1fr))'
+    },
+    gridLg3: {
+      gridTemplateColumns: isMobile ? '1fr' : isSmallMobile ? '1fr' : isTablet ? 'repeat(auto-fit, minmax(240px, 1fr))' : 'repeat(auto-fit, minmax(280px, 1fr))'
+    },
+    profileImage: {
+      width: isMobile ? '100px' : isTablet ? '120px' : '140px',
+      height: isMobile ? '100px' : isTablet ? '120px' : '140px',
+      borderRadius: '50%',
+      margin: isMobile ? '0 auto 20px' : '0 auto 32px',
+      objectFit: 'cover',
+      border: '4px solid rgba(102, 126, 234, 0.1)',
+      boxShadow: '0 8px 30px rgba(102, 126, 234, 0.2)'
+    },
+    profilePlaceholder: {
+      width: isMobile ? '100px' : isTablet ? '120px' : '140px',
+      height: isMobile ? '100px' : isTablet ? '120px' : '140px',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+      borderRadius: '50%',
+      margin: isMobile ? '0 auto 20px' : '0 auto 32px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'white',
+      fontSize: isMobile ? '40px' : isTablet ? '48px' : '56px',
+      fontWeight: '700',
+      boxShadow: '0 8px 30px rgba(102, 126, 234, 0.3)',
+      border: '4px solid rgba(255, 255, 255, 0.2)'
+    },
+    avatarSmall: {
+      width: isMobile ? '60px' : '72px',
+      height: isMobile ? '60px' : '72px',
+      borderRadius: '50%',
+      objectFit: 'cover',
+      border: '3px solid rgba(102, 126, 234, 0.1)',
+      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
+    },
+    avatarPlaceholder: {
+      width: isMobile ? '60px' : '72px',
+      height: isMobile ? '60px' : '72px',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'white',
+      fontSize: isMobile ? '20px' : '28px',
+      fontWeight: '600',
+      boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+      border: '3px solid rgba(255, 255, 255, 0.2)'
+    },
+    achievementItem: {
+      display: 'flex',
+      alignItems: isMobile ? 'flex-start' : 'center',
+      gap: isMobile ? '12px' : '20px',
+      backgroundColor: 'white',
+      borderRadius: isMobile ? '16px' : '20px',
+      padding: isMobile ? '20px' : '28px',
+      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.06)',
+      marginBottom: '16px',
+      border: '1px solid rgba(255, 255, 255, 0.8)',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      position: 'relative',
+      overflow: 'hidden',
+      flexDirection: isMobile ? 'column' : 'row',
+      textAlign: isMobile ? 'center' : 'left'
+    },
+    achievementIcon: {
+      width: isMobile ? '48px' : '56px',
+      height: isMobile ? '48px' : '56px',
+      background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+      borderRadius: isMobile ? '12px' : '16px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      boxShadow: '0 4px 15px rgba(251, 191, 36, 0.3)',
+      margin: isMobile ? '0 auto' : '0'
+    },
+    galleryItem: {
+      backgroundColor: 'white',
+      borderRadius: isMobile ? '16px' : '20px',
+      overflow: 'hidden',
+      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.06)',
+      border: '1px solid rgba(255, 255, 255, 0.8)',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      position: 'relative'
+    },
+    galleryImage: {
+      width: '100%',
+      height: isMobile ? '180px' : isTablet ? '200px' : '220px',
+      objectFit: 'cover'
+    },
+    galleryPlaceholder: {
+      width: '100%',
+      height: isMobile ? '180px' : isTablet ? '200px' : '220px',
+      background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #ddd6fe 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    multimedia: {
+      backgroundColor: 'white',
+      padding: isMobile ? '32px 0' : '48px 0',
+      borderTop: '1px solid rgba(102, 126, 234, 0.1)',
+      position: 'relative'
+    },
+    multimediaContent: {
+      maxWidth: isMobile ? '100%' : '1400px',
+      margin: '0 auto',
+      padding: isMobile ? '0 16px' : '0 24px'
+    },
+    multimediaGrid: {
+      display: 'grid',
+      gridTemplateColumns: isMobile ? '1fr' : isTablet ? '1fr' : 'repeat(auto-fit, minmax(420px, 1fr))',
+      gap: isMobile ? '24px' : '32px'
+    },
+    multimediaCard: {
+      background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+      borderRadius: isMobile ? '20px' : '24px',
+      padding: isMobile ? '24px' : '32px',
+      border: '1px solid rgba(102, 126, 234, 0.1)',
+      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)'
+    },
+    multimediaInner: {
+      backgroundColor: 'white',
+      borderRadius: '16px',
+      padding: isMobile ? '20px' : '24px',
+      textAlign: 'center',
+      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.04)',
+      border: '1px solid rgba(255, 255, 255, 0.8)'
+    },
+    mediaPlaceholder: {
+      width: '100%',
+      height: isMobile ? '120px' : '160px',
+      background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+      borderRadius: '12px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: '20px',
+      border: '2px dashed rgba(102, 126, 234, 0.2)'
+    },
+    footerContent: {
+      maxWidth: isMobile ? '100%' : '1400px',
+      margin: '0 auto',
+      padding: isMobile ? '0 16px' : '0 24px',
+      position: 'relative',
+      zIndex: 2
+    },
+    loginCard: {
+      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+      padding: isMobile ? '30px 20px' : '40px',
+      borderRadius: '24px',
+      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2)',
+      width: isMobile ? '100%' : '420px',
+      maxWidth: '90vw',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.3)'
+    },
+    formGroup: {
+      marginBottom: '24px'
+    },
+    label: {
+      display: 'block',
+      color: '#374151',
+      fontSize: '14px',
+      fontWeight: '600',
+      marginBottom: '8px'
+    },
+    input: {
+      width: '100%',
+      padding: '14px 16px',
+      border: '2px solid #e5e7eb',
+      borderRadius: '12px',
+      fontSize: '16px',
+      outline: 'none',
+      transition: 'all 0.3s ease',
+      fontFamily: 'inherit',
+      backgroundColor: 'rgba(255, 255, 255, 0.8)'
+    },
+    inputFocus: {
+      borderColor: '#667eea',
+      boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)',
+      backgroundColor: 'white'
+    },
+    buttonPrimary: {
+      flex: 1,
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      color: 'white',
+      padding: '14px 24px',
+      borderRadius: '12px',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: '600',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
+    },
+    buttonPrimaryHover: {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.4)'
+    },
+    buttonSecondary: {
+      flex: 1,
+      backgroundColor: '#f3f4f6',
+      color: '#374151',
+      padding: '14px 24px',
+      borderRadius: '12px',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: '500',
+      transition: 'all 0.3s ease'
+    },
+    flexRow: {
+      display: 'flex',
+      gap: '16px',
+      flexDirection: isMobile ? 'column' : 'row'
+    },
+    uploadButton: {
+      position: 'absolute',
+      bottom: '8px',
+      right: '8px',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      color: 'white',
+      padding: isMobile ? '8px' : '10px',
+      borderRadius: '50%',
+      border: 'none',
+      cursor: 'pointer',
+      boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+      transition: 'all 0.3s ease'
+    },
+    uploadButtonHover: {
+      transform: 'scale(1.1)',
+      boxShadow: '0 6px 20px rgba(102, 126, 234, 0.4)'
+    },
+    deleteButton: {
+      position: 'absolute',
+      top: '12px',
+      right: '12px',
+      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+      color: 'white',
+      padding: isMobile ? '6px' : '8px',
+      borderRadius: '50%',
+      border: 'none',
+      cursor: 'pointer',
+      boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)',
+      transition: 'all 0.3s ease',
+      zIndex: 10
+    },
+    deleteButtonHover: {
+      transform: 'scale(1.1)',
+      boxShadow: '0 6px 20px rgba(239, 68, 68, 0.4)'
+    },
+    sectionHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: isMobile ? '20px' : '32px',
+      flexDirection: isMobile ? 'column' : 'row',
+      gap: isMobile ? '12px' : '0'
+    },
+    addButton: {
+      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      color: 'white',
+      border: 'none',
+      borderRadius: '12px',
+      padding: isMobile ? '10px 16px' : '12px 20px',
+      cursor: 'pointer',
+      fontSize: isMobile ? '12px' : '14px',
+      fontWeight: '500',
+      display: 'flex',
+      alignItems: 'center',
+      gap: isMobile ? '6px' : '8px',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
+    },
+    addButtonHover: {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 8px 25px rgba(16, 185, 129, 0.4)'
+    },
+    sectionTitle: {
+      fontSize: isMobile ? '24px' : isTablet ? '28px' : '32px',
+      fontWeight: '700',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      backgroundClip: 'text',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      margin: 0,
+      lineHeight: 1.2,
+      textAlign: isMobile ? 'center' : 'left'
+    },
+    subtitle: {
+      fontSize: isMobile ? '16px' : '18px',
+      color: '#6b7280',
+      fontWeight: '400',
+      lineHeight: 1.5
+    },
+    overviewCard: {
+      cursor: 'pointer',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      position: 'relative',
+      overflow: 'hidden'
+    },
+    overviewCardHover: {
+      transform: 'translateY(-6px)',
+      boxShadow: '0 20px 50px rgba(102, 126, 234, 0.15)'
+    },
+    gradientText: {
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      backgroundClip: 'text',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      fontWeight: '600'
+    }
+  }), [isMobile, isTablet, isSmallMobile]);
 
   // Combine base and responsive styles
   const styles = useMemo(() => ({
