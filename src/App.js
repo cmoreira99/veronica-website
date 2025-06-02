@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { User, GraduationCap, Users, Heart, Award, Camera, Megaphone, Music, Play, Edit, Save, X, Upload, Download, LogOut, Lock, Plus, Trash2, Settings, Menu } from 'lucide-react';
 
 const PersonalWebsite = () => {
@@ -9,7 +9,14 @@ const PersonalWebsite = () => {
   const [editMode, setEditMode] = useState(false);
   const [cloudStatus, setCloudStatus] = useState('checking'); // 'checking', 'online', 'offline'
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [windowWidth, setWindowWidth] = useState(() => {
+    // Safe initialization for SSR/production
+    if (typeof window !== 'undefined') {
+      return window.innerWidth;
+    }
+    return 1024; // Default width for server-side rendering
+  });
+  
   const [content, setContent] = useState({
     logo: null, // Add logo to content
     personal: {
@@ -142,8 +149,20 @@ const PersonalWebsite = () => {
     }
   });
 
-  // Dynamic menu generation
-  const generateMenuItems = () => {
+  // Memoize responsive breakpoints to prevent recalculation issues
+  const responsiveBreakpoints = useMemo(() => {
+    const width = windowWidth || 1024; // Fallback for SSR
+    return {
+      isMobile: width <= 768,
+      isTablet: width > 768 && width <= 1024,
+      isSmallMobile: width <= 480
+    };
+  }, [windowWidth]);
+
+  const { isMobile, isTablet, isSmallMobile } = responsiveBreakpoints;
+
+  // Dynamic menu generation - memoized to prevent unnecessary recalculations
+  const menuItems = useMemo(() => {
     const baseItems = [
       { id: 'personal', label: 'Personal', icon: User }
     ];
@@ -204,9 +223,7 @@ const PersonalWebsite = () => {
     );
 
     return baseItems;
-  };
-
-  const menuItems = generateMenuItems();
+  }, [content.education, content.family, content.friends]);
 
   /* 
   🔐 SECURE GITHUB SETUP INSTRUCTIONS:
@@ -238,12 +255,14 @@ const PersonalWebsite = () => {
   const DATA_FILE = 'website-data.json'; // File to store data in your repo
 
   // Secure token management
-  const setupGitHubToken = () => {
+  const setupGitHubToken = useCallback(() => {
     if (!GITHUB_TOKEN) {
       const token = prompt('🔐 Enter your GitHub Personal Access Token:\n(This will only be stored in memory, not saved)');
-      if (token && token.startsWith('github_pat_') || token.startsWith('ghp_')) {
+      if (token && (token.startsWith('github_pat_') || token.startsWith('ghp_'))) {
         GITHUB_TOKEN = token;
-        localStorage.setItem('github-token-set', 'true'); // Just a flag, not the token
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('github-token-set', 'true'); // Just a flag, not the token
+        }
         return true;
       } else {
         alert('❌ Invalid token format. Token should start with "github_pat_" or "ghp_"');
@@ -251,15 +270,15 @@ const PersonalWebsite = () => {
       }
     }
     return true;
-  };
+  }, []);
 
   // Check if token is set up
-  const isTokenConfigured = () => {
-    return GITHUB_TOKEN !== null || localStorage.getItem('github-token-set') === 'true';
-  };
+  const isTokenConfigured = useCallback(() => {
+    return GITHUB_TOKEN !== null || (typeof localStorage !== 'undefined' && localStorage.getItem('github-token-set') === 'true');
+  }, []);
 
   // Unicode-safe base64 encoding (handles emojis and special characters)
-  const unicodeToBase64 = (str) => {
+  const unicodeToBase64 = useCallback((str) => {
     try {
       // Use TextEncoder for proper UTF-8 encoding
       const encoder = new TextEncoder();
@@ -278,10 +297,10 @@ const PersonalWebsite = () => {
         return String.fromCharCode('0x' + p1);
       }));
     }
-  };
+  }, []);
 
   // Unicode-safe base64 decoding
-  const base64ToUnicode = (str) => {
+  const base64ToUnicode = useCallback((str) => {
     try {
       // Decode base64 to binary
       const binary = atob(str);
@@ -306,9 +325,9 @@ const PersonalWebsite = () => {
         return atob(str);
       }
     }
-  };
+  }, []);
 
-  const loadFromCloud = async () => {
+  const loadFromCloud = useCallback(async () => {
     try {
       setCloudStatus('checking');
       
@@ -328,17 +347,21 @@ const PersonalWebsite = () => {
         // GitHub API returns content as base64, decode it with Unicode support
         const content = JSON.parse(base64ToUnicode(data.content));
         setContent(content);
-        localStorage.setItem('personalWebsiteContent', JSON.stringify(content));
-        localStorage.setItem('github-file-sha', data.sha); // Store SHA for updates
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('personalWebsiteContent', JSON.stringify(content));
+          localStorage.setItem('github-file-sha', data.sha); // Store SHA for updates
+        }
         setCloudStatus('online');
         console.log('✅ Content loaded from GitHub successfully!');
       } else if (response.status === 404) {
         // File doesn't exist yet, that's ok - we'll create it on first save
         console.log('📁 Data file not found in GitHub, will create on first save');
         setCloudStatus('online');
-        const savedContent = localStorage.getItem('personalWebsiteContent');
-        if (savedContent) {
-          setContent(JSON.parse(savedContent));
+        if (typeof localStorage !== 'undefined') {
+          const savedContent = localStorage.getItem('personalWebsiteContent');
+          if (savedContent) {
+            setContent(JSON.parse(savedContent));
+          }
         }
       } else {
         throw new Error(`GitHub API error: ${response.status}`);
@@ -347,14 +370,16 @@ const PersonalWebsite = () => {
       console.log('⚠️ GitHub API failed, using local storage:', error.message);
       setCloudStatus('offline');
       // Fallback to localStorage if GitHub fails
-      const savedContent = localStorage.getItem('personalWebsiteContent');
-      if (savedContent) {
-        setContent(JSON.parse(savedContent));
+      if (typeof localStorage !== 'undefined') {
+        const savedContent = localStorage.getItem('personalWebsiteContent');
+        if (savedContent) {
+          setContent(JSON.parse(savedContent));
+        }
       }
     }
-  };
+  }, [base64ToUnicode]);
 
-  const saveToCloud = async (contentData) => {
+  const saveToCloud = useCallback(async (contentData) => {
     try {
       // Check if we have a token, if not, prompt for it
       if (!setupGitHubToken()) {
@@ -362,7 +387,7 @@ const PersonalWebsite = () => {
       }
       
       // Always get the current file info first to ensure we have the latest SHA
-      let currentSha = localStorage.getItem('github-file-sha');
+      let currentSha = typeof localStorage !== 'undefined' ? localStorage.getItem('github-file-sha') : null;
       
       // Fetch current file info to get the latest SHA
       try {
@@ -376,7 +401,9 @@ const PersonalWebsite = () => {
         if (fileInfoResponse.ok) {
           const fileInfo = await fileInfoResponse.json();
           currentSha = fileInfo.sha;
-          localStorage.setItem('github-file-sha', currentSha);
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('github-file-sha', currentSha);
+          }
           console.log('📥 Retrieved latest file SHA from GitHub');
         } else if (fileInfoResponse.status !== 404) {
           console.warn('⚠️ Could not fetch file info:', fileInfoResponse.status);
@@ -415,7 +442,9 @@ const PersonalWebsite = () => {
       
       if (response.ok) {
         const result = await response.json();
-        localStorage.setItem('github-file-sha', result.content.sha);
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('github-file-sha', result.content.sha);
+        }
         setCloudStatus('online');
         console.log('✅ Content saved to GitHub successfully!');
         return true;
@@ -439,7 +468,9 @@ const PersonalWebsite = () => {
             if (retryFileInfo.ok) {
               const retryData = await retryFileInfo.json();
               body.sha = retryData.sha;
-              localStorage.setItem('github-file-sha', retryData.sha);
+              if (typeof localStorage !== 'undefined') {
+                localStorage.setItem('github-file-sha', retryData.sha);
+              }
               
               // Retry the save with correct SHA
               const retryResponse = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`, {
@@ -454,7 +485,9 @@ const PersonalWebsite = () => {
               
               if (retryResponse.ok) {
                 const retryResult = await retryResponse.json();
-                localStorage.setItem('github-file-sha', retryResult.content.sha);
+                if (typeof localStorage !== 'undefined') {
+                  localStorage.setItem('github-file-sha', retryResult.content.sha);
+                }
                 setCloudStatus('online');
                 console.log('✅ Content saved to GitHub on retry!');
                 return true;
@@ -472,22 +505,42 @@ const PersonalWebsite = () => {
       setCloudStatus('offline');
     }
     return false;
-  };
+  }, [setupGitHubToken, unicodeToBase64]);
+
+  // Safe resize handler with debouncing
+  const handleResize = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      setWindowWidth(window.innerWidth);
+    }
+  }, []);
 
   useEffect(() => {
     // Load content from cloud first, then fallback to localStorage
     loadFromCloud();
-  }, []);
+  }, [loadFromCloud]);
 
   useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    if (typeof window !== 'undefined') {
+      // Debounce resize events to prevent performance issues
+      let timeoutId;
+      const debouncedResize = () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(handleResize, 150);
+      };
+      
+      window.addEventListener('resize', debouncedResize);
+      return () => {
+        clearTimeout(timeoutId);
+        window.removeEventListener('resize', debouncedResize);
+      };
+    }
+  }, [handleResize]);
 
-  const saveContent = async () => {
+  const saveContent = useCallback(async () => {
     // Save to localStorage first (immediate)
-    localStorage.setItem('personalWebsiteContent', JSON.stringify(content));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('personalWebsiteContent', JSON.stringify(content));
+    }
     
     // Save to GitHub (for other people to see)
     const githubSaved = await saveToCloud(content);
@@ -499,9 +552,9 @@ const PersonalWebsite = () => {
     }
     
     setEditMode(false);
-  };
+  }, [content, saveToCloud]);
 
-  const handleLogin = (e) => {
+  const handleLogin = useCallback((e) => {
     e.preventDefault();
     if (loginForm.username === 'veronica' && loginForm.password === 'veronica') {
       setIsAdmin(true);
@@ -510,19 +563,14 @@ const PersonalWebsite = () => {
     } else {
       alert('Invalid credentials!');
     }
-  };
+  }, [loginForm]);
 
-  // Handle responsive design - Define breakpoints
-  const isMobile = windowWidth <= 768;
-  const isTablet = windowWidth > 768 && windowWidth <= 1024;
-  const isSmallMobile = windowWidth <= 480;
-
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     setIsAdmin(false);
     setEditMode(false);
-  };
+  }, []);
 
-  const exportData = () => {
+  const exportData = useCallback(() => {
     const dataStr = JSON.stringify(content, null, 2);
     const dataBlob = new Blob([dataStr], {type: 'application/json'});
     const url = URL.createObjectURL(dataBlob);
@@ -530,9 +578,9 @@ const PersonalWebsite = () => {
     link.href = url;
     link.download = 'website-content.json';
     link.click();
-  };
+  }, [content]);
 
-  const importData = (event) => {
+  const importData = useCallback((event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -540,17 +588,19 @@ const PersonalWebsite = () => {
         try {
           const importedData = JSON.parse(e.target.result);
           setContent(importedData);
-          localStorage.setItem('personalWebsiteContent', JSON.stringify(importedData));
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('personalWebsiteContent', JSON.stringify(importedData));
+          }
         } catch (error) {
           alert('Invalid file format!');
         }
       };
       reader.readAsText(file);
     }
-  };
+  }, []);
 
-  // Dynamic content management functions
-  const addEducationLevel = () => {
+  // Dynamic content management functions - all memoized to prevent recreation
+  const addEducationLevel = useCallback(() => {
     const newKey = prompt('Enter education level key (e.g., "masters", "phd"):');
     const newTitle = prompt('Enter education level title (e.g., "Master\'s Degree"):');
     
@@ -566,18 +616,18 @@ const PersonalWebsite = () => {
       };
       setContent(newContent);
     }
-  };
+  }, [content]);
 
-  const removeEducationLevel = (key) => {
+  const removeEducationLevel = useCallback((key) => {
     if (window.confirm(`Remove ${content.education[key].title}?`)) {
       const newContent = { ...content };
       delete newContent.education[key];
       setContent(newContent);
       if (activeSection === key) setActiveSection('personal');
     }
-  };
+  }, [content, activeSection]);
 
-  const addFamilyMember = () => {
+  const addFamilyMember = useCallback(() => {
     const newKey = prompt('Enter family member category key (e.g., "uncle", "aunt", "cousins"):');
     const newTitle = prompt('Enter family member category title (e.g., "My Uncles", "My Aunts"):');
     
@@ -589,9 +639,9 @@ const PersonalWebsite = () => {
       };
       setContent(newContent);
     }
-  };
+  }, [content]);
 
-  const addPersonToFamily = (familyKey) => {
+  const addPersonToFamily = useCallback((familyKey) => {
     const newContent = { ...content };
     newContent.family[familyKey].list.push({ 
       name: 'New Person', 
@@ -599,26 +649,26 @@ const PersonalWebsite = () => {
       image: null 
     });
     setContent(newContent);
-  };
+  }, [content]);
 
-  const removePersonFromFamily = (familyKey, index) => {
+  const removePersonFromFamily = useCallback((familyKey, index) => {
     if (window.confirm('Remove this person?')) {
       const newContent = { ...content };
       newContent.family[familyKey].list.splice(index, 1);
       setContent(newContent);
     }
-  };
+  }, [content]);
 
-  const removeFamilyMember = (key) => {
-    if (window.confirm(`Remove ${content.family[key].name}?`)) {
+  const removeFamilyMember = useCallback((key) => {
+    if (window.confirm(`Remove ${content.family[key].title}?`)) {
       const newContent = { ...content };
       delete newContent.family[key];
       setContent(newContent);
       if (activeSection === key) setActiveSection('personal');
     }
-  };
+  }, [content, activeSection]);
 
-  const addFriendsCategory = () => {
+  const addFriendsCategory = useCallback(() => {
     const newKey = prompt('Enter friends category key (e.g., "scout", "work"):');
     const newTitle = prompt('Enter friends category title (e.g., "Scout Friends"):');
     
@@ -634,74 +684,74 @@ const PersonalWebsite = () => {
       };
       setContent(newContent);
     }
-  };
+  }, [content]);
 
-  const removeFriendsCategory = (key) => {
+  const removeFriendsCategory = useCallback((key) => {
     if (window.confirm(`Remove ${content.friends[key].title} category?`)) {
       const newContent = { ...content };
       delete newContent.friends[key];
       setContent(newContent);
       if (activeSection === key) setActiveSection('personal');
     }
-  };
+  }, [content, activeSection]);
 
-  const addFriend = (category) => {
+  const addFriend = useCallback((category) => {
     const newContent = { ...content };
     newContent.friends[category].list.push({ name: 'New Friend', image: null });
     setContent(newContent);
-  };
+  }, [content]);
 
-  const removeFriend = (category, index) => {
+  const removeFriend = useCallback((category, index) => {
     if (window.confirm('Remove this friend?')) {
       const newContent = { ...content };
       newContent.friends[category].list.splice(index, 1);
       setContent(newContent);
     }
-  };
+  }, [content]);
 
-  const addGalleryItem = () => {
+  const addGalleryItem = useCallback(() => {
     const newContent = { ...content };
     newContent.gallery.push({ title: 'New Photo', description: 'Photo description', image: null });
     setContent(newContent);
-  };
+  }, [content]);
 
-  const removeGalleryItem = (index) => {
+  const removeGalleryItem = useCallback((index) => {
     if (window.confirm('Remove this photo?')) {
       const newContent = { ...content };
       newContent.gallery.splice(index, 1);
       setContent(newContent);
     }
-  };
+  }, [content]);
 
-  const addAchievement = () => {
+  const addAchievement = useCallback(() => {
     const newContent = { ...content };
     newContent.achievements.push({ title: 'New Achievement', year: new Date().getFullYear().toString(), description: 'Achievement description' });
     setContent(newContent);
-  };
+  }, [content]);
 
-  const removeAchievement = (index) => {
+  const removeAchievement = useCallback((index) => {
     if (window.confirm('Remove this achievement?')) {
       const newContent = { ...content };
       newContent.achievements.splice(index, 1);
       setContent(newContent);
     }
-  };
+  }, [content]);
 
-  const addCollection = () => {
+  const addCollection = useCallback(() => {
     const newContent = { ...content };
     newContent.collections.push({ name: 'New Collection', icon: '📦', description: 'Collection description' });
     setContent(newContent);
-  };
+  }, [content]);
 
-  const removeCollection = (index) => {
+  const removeCollection = useCallback((index) => {
     if (window.confirm('Remove this collection?')) {
       const newContent = { ...content };
       newContent.collections.splice(index, 1);
       setContent(newContent);
     }
-  };
+  }, [content]);
 
-  const handleImageUpload = (section, key, index = null) => {
+  const handleImageUpload = useCallback((section, key, index = null) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -744,9 +794,9 @@ const PersonalWebsite = () => {
       }
     };
     input.click();
-  };
+  }, [content]);
 
-  const handleFileUpload = (section, key) => {
+  const handleFileUpload = useCallback((section, key) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = section === 'audio' ? 'audio/*' : 'video/*';
@@ -763,9 +813,9 @@ const PersonalWebsite = () => {
       }
     };
     input.click();
-  };
+  }, [content]);
 
-  const updateContent = (section, key, value, index = null) => {
+  const updateContent = useCallback((section, key, value, index = null) => {
     const newContent = { ...content };
     if (index !== null) {
       if (key.includes('.')) {
@@ -789,9 +839,9 @@ const PersonalWebsite = () => {
       newContent[section][key] = value;
     }
     setContent(newContent);
-  };
+  }, [content]);
 
-  const renderEditableInput = (value, onChange, type = 'text', isTextarea = false) => {
+  const renderEditableInput = useCallback((value, onChange, type = 'text', isTextarea = false) => {
     if (!editMode) return value;
     
     if (isTextarea) {
@@ -824,10 +874,10 @@ const PersonalWebsite = () => {
         fontSize: 'inherit'
       }
     });
-  };
+  }, [editMode]);
 
-  // Responsive styles that adapt to screen size
-  const getResponsiveStyles = () => ({
+  // Memoize responsive styles to prevent unnecessary recalculations
+  const styles = useMemo(() => ({
     container: {
       minHeight: '100vh',
       backgroundColor: '#fefcff',
@@ -1458,12 +1508,9 @@ const PersonalWebsite = () => {
       WebkitTextFillColor: 'transparent',
       fontWeight: '600'
     }
-  });
+  }), [isMobile, isTablet, isSmallMobile]);
 
-  // Get responsive styles
-  const styles = getResponsiveStyles();
-
-  const renderContent = () => {
+  const renderContent = useCallback(() => {
     // Check if activeSection is a family member
     if (content.family && content.family[activeSection]) {
       const familyGroup = content.family[activeSection];
@@ -2463,17 +2510,17 @@ const PersonalWebsite = () => {
         
         return <div style={{ padding: isMobile ? '20px' : '40px', textAlign: 'center', color: '#6b7280' }}>Please select a section from the menu</div>;
     }
-  };
+  }, [content, activeSection, editMode, styles, isMobile, isTablet, renderEditableInput, addPersonToFamily, removeFamilyMember, removePersonFromFamily, updateContent, removeEducationLevel, addFriend, removeFriendsCategory, removeFriend, handleImageUpload, removeAchievement, addAchievement, removeGalleryItem, addGalleryItem, removeCollection, addCollection, addEducationLevel, addFamilyMember, addFriendsCategory]);
 
-  const handleMenuClick = (itemId) => {
+  const handleMenuClick = useCallback((itemId) => {
     setActiveSection(itemId);
     setMobileMenuOpen(false);
-  };
+  }, []);
 
   // Check if multimedia has content
-  const hasMultimediaContent = () => {
+  const hasMultimediaContent = useCallback(() => {
     return content.multimedia.audio.file || content.multimedia.video.file;
-  };
+  }, [content.multimedia]);
 
   // Login Modal
   if (showLogin) {
