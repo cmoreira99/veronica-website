@@ -158,6 +158,11 @@
             "name": "Sports",
             "icon": "⚽",
             "description": "Memorabilia from favorite teams and sports equipment collection."
+        },
+        {
+            "name": "cce",
+            "icon": "😅",
+            "description": "cece"
         }
     ],
     "friends": {
