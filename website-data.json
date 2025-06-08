@@ -153,6 +153,11 @@
             "name": "sss",
             "icon": "sss",
             "description": "sss"
+        },
+        {
+            "name": "sss1\\",
+            "icon": "111",
+            "description": "111"
         }
     ],
     "friends": {
