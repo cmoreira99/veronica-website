@@ -135,7 +135,7 @@
     },
     "collections": [
         {
-            "name": "Books",
+            "name": "Books1",
             "icon": "📚",
             "description": "Collection of favorite novels, academic books, and inspiring biographies."
         },
