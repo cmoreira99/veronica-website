@@ -205,6 +205,20 @@
                     "image": null
                 }
             ]
+        },
+        "Senior High Friends": {
+            "title": "Senior High School Friends",
+            "description": "Friends who guide me through my toughest years",
+            "list": [
+                {
+                    "name": "Kyla Salazar",
+                    "image": null
+                },
+                {
+                    "name": "Jason Roxas",
+                    "image": null
+                }
+            ]
         }
     },
     "achievements": [
