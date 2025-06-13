@@ -180,6 +180,10 @@
                 {
                     "name": "Camille Reneido",
                     "image": null
+                },
+                {
+                    "name": "Nadine Cajayon",
+                    "image": null
                 }
             ]
         },
@@ -222,7 +226,7 @@
     },
     "achievements": [
         {
-            "title": "Academic Excellence Award",
+            "title": "Deanlister ",
             "year": "2023",
             "description": "Recognized for outstanding academic performance"
         },
