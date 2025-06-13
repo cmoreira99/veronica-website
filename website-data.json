@@ -188,38 +188,16 @@
                 }
             ]
         },
-        "church": {
-            "title": "Church Mates",
-            "description": "Friends from my faith community who support my spiritual growth.",
+        "High School Friends": {
+            "title": "HighSchool FriendsR",
+            "description": "Friend who share awesome years with me",
             "list": [
                 {
-                    "name": "Friend 1",
+                    "name": "Rogie Canicula",
                     "image": null
                 },
                 {
-                    "name": "Friend 2",
-                    "image": null
-                },
-                {
-                    "name": "Friend 3",
-                    "image": null
-                }
-            ]
-        },
-        "org": {
-            "title": "Organization Friends",
-            "description": "Friends from various clubs and organizations I'm part of.",
-            "list": [
-                {
-                    "name": "Friend 1",
-                    "image": null
-                },
-                {
-                    "name": "Friend 2",
-                    "image": null
-                },
-                {
-                    "name": "Friend 3",
+                    "name": "Alj Cyra Moraga",
                     "image": null
                 }
             ]
