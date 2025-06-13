@@ -130,8 +130,18 @@
             "title": "My Grand Parents",
             "list": [
                 {
-                    "name": "Grandparents' Names",
+                    "name": "",
                     "description": "My grandparents are the wisdom keepers of our family, sharing stories and life lessons.",
+                    "image": null
+                },
+                {
+                    "name": "New Person",
+                    "description": "Description",
+                    "image": null
+                },
+                {
+                    "name": "New Person",
+                    "description": "Description",
                     "image": null
                 }
             ]
