@@ -162,16 +162,6 @@
             "name": "Sports",
             "icon": "⚽",
             "description": "Memorabilia from favorite teams and sports equipment collection."
-        },
-        {
-            "name": "sss",
-            "icon": "sss",
-            "description": "sss"
-        },
-        {
-            "name": "sss1\\",
-            "icon": "111",
-            "description": "111"
         }
     ],
     "friends": {
@@ -180,7 +170,7 @@
             "description": "Friends who share the academic journey with me.",
             "list": [
                 {
-                    "name": "Friend 1",
+                    "name": "",
                     "image": null
                 },
                 {
