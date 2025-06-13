@@ -149,7 +149,7 @@
     },
     "collections": [
         {
-            "name": "",
+            "name": "-",
             "icon": "📚",
             "description": "Collection of favorite novels, academic books, and inspiring biographies."
         },
