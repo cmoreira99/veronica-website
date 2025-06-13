@@ -110,13 +110,18 @@
             "title": "My Siblings",
             "list": [
                 {
-                    "name": "Brother\/Sister Name",
+                    "name": "Bernadette",
                     "description": "My sibling is my best friend and partner in all adventures.",
                     "image": null
                 },
                 {
                     "name": "Another Sibling",
                     "description": "Another amazing sibling who brings joy to our family.",
+                    "image": null
+                },
+                {
+                    "name": "New Person",
+                    "description": "Description",
                     "image": null
                 }
             ]
