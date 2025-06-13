@@ -189,7 +189,7 @@
             ]
         },
         "High School Friends": {
-            "title": "HighSchool FriendsR",
+            "title": "High",
             "description": "Friend who share awesome years with me",
             "list": [
                 {
@@ -198,6 +198,10 @@
                 },
                 {
                     "name": "Alj Cyra Moraga",
+                    "image": null
+                },
+                {
+                    "name": "Rose Tablada",
                     "image": null
                 }
             ]
